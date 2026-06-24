@@ -145,12 +145,13 @@
     .hero-mtn{position:absolute;left:6%;right:6%;bottom:7%;z-index:4;opacity:.5;pointer-events:none;}
     .hero-mtn svg{width:100%;height:auto;}
     /* emblema METODO ZAC (al posto della foto) */
-    .hero-emblem{position:relative;z-index:2;width:80%;aspect-ratio:1/1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
-      background:radial-gradient(circle at 50% 46%, rgba(8,15,28,.55), rgba(8,15,28,0) 64%);}
-    .hero-emblem .em-kicker{font-family:'Oswald',sans-serif;font-weight:600;letter-spacing:.5em;font-size:clamp(13px,1.5vw,19px);color:var(--gold);text-transform:uppercase;padding-left:.5em;}
-    .hero-emblem .em-zac{font-family:'Oswald',sans-serif;font-weight:700;letter-spacing:.03em;font-size:clamp(70px,10vw,132px);line-height:.88;color:var(--ivory);margin-top:6px;text-shadow:0 6px 30px rgba(0,0,0,.5);}
-    .hero-emblem .em-rule{width:clamp(90px,14vw,150px);height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:20px 0;}
-    .hero-emblem .em-tri{font-family:'Oswald',sans-serif;font-weight:500;letter-spacing:.2em;font-size:clamp(10px,1.2vw,14px);color:var(--muted);text-transform:uppercase;}
+    .hero-emblem{position:relative;z-index:2;width:62%;aspect-ratio:1/1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
+      background:radial-gradient(circle at 50% 48%, rgba(8,15,28,.6), rgba(8,15,28,0) 70%);}
+    .hero-emblem .em-kicker{font-family:'Oswald',sans-serif;font-weight:600;letter-spacing:.46em;font-size:clamp(11px,1.4vw,17px);color:var(--gold);text-transform:uppercase;padding-left:.46em;}
+    .hero-emblem .em-zac{font-family:'Oswald',sans-serif;font-weight:700;letter-spacing:.03em;font-size:clamp(56px,7.6vw,108px);line-height:.9;color:var(--ivory);margin-top:4px;text-shadow:0 6px 30px rgba(0,0,0,.5);}
+    .hero-emblem .em-rule{width:clamp(64px,9vw,100px);height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:14px 0;}
+    .hero-emblem .em-tri{display:flex;flex-direction:column;align-items:center;gap:4px;font-family:'Oswald',sans-serif;font-weight:500;letter-spacing:.18em;font-size:clamp(9px,1vw,12px);color:var(--muted);text-transform:uppercase;}
+    .hero-emblem .em-tri i{font-style:normal;}
     @media(max-width:980px){
       .hero-grid{grid-template-columns:1fr;gap:30px;}
       .hero-visual{max-width:420px;margin:0 auto;order:-1;}
@@ -299,11 +300,11 @@
   .hero h1{font-size:40px;}
   .hero .lead{max-width:100%;}
   .hero-meta{font-size:11px;letter-spacing:.12em;}
-  .hero-emblem{width:90%;background:radial-gradient(circle at 50% 48%, rgba(8,15,28,.7), rgba(8,15,28,0) 66%);}
-  .hero-emblem .em-zac{font-size:58px;}
-  .hero-emblem .em-kicker{font-size:12px;letter-spacing:.38em;}
-  .hero-emblem .em-rule{margin:14px 0;}
-  .hero-emblem .em-tri{font-size:9px;letter-spacing:.1em;}
+  .hero-emblem{width:66%;}
+  .hero-emblem .em-zac{font-size:50px;}
+  .hero-emblem .em-kicker{font-size:11px;letter-spacing:.4em;}
+  .hero-emblem .em-rule{margin:12px 0;}
+  .hero-emblem .em-tri{font-size:9px;letter-spacing:.14em;gap:3px;}
   .section-head h2,.fhead h2,.about h2,.prog-card h2,.contact-card h2,.cta-band h2,.method-cta h2{font-size:32px;line-height:1.12;}
   .sectionHeaderTitle{font-size:34px;}
   .pcard{padding:24px 16px 26px;}
