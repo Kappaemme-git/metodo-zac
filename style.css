@@ -300,11 +300,11 @@
   .hero h1{font-size:40px;}
   .hero .lead{max-width:100%;}
   .hero-meta{font-size:11px;letter-spacing:.12em;}
-  .hero-emblem{width:66%;}
-  .hero-emblem .em-zac{font-size:50px;}
-  .hero-emblem .em-kicker{font-size:11px;letter-spacing:.4em;}
-  .hero-emblem .em-rule{margin:12px 0;}
-  .hero-emblem .em-tri{font-size:9px;letter-spacing:.14em;gap:3px;}
+  .hero-visual{max-width:300px;}
+  .hero-emblem{width:58%;}
+  .hero-emblem .em-zac{font-size:46px;}
+  .hero-emblem .em-kicker{font-size:10px;letter-spacing:.4em;}
+  .hero-emblem .em-rule{margin:11px 0 0;width:54px;}
   .section-head h2,.fhead h2,.about h2,.prog-card h2,.contact-card h2,.cta-band h2,.method-cta h2{font-size:32px;line-height:1.12;}
   .sectionHeaderTitle{font-size:34px;}
   .pcard{padding:24px 16px 26px;}
