@@ -132,7 +132,10 @@
     .hero h1 .gold{font-size:1.04em;line-height:.95;display:inline-block;margin-top:6px;}
     .hero-visual{position:relative;aspect-ratio:1/1.06;display:grid;place-items:center;}
     .hero-visual .enso{position:absolute;inset:0;z-index:1;pointer-events:none;}
+    .enso .ring-spin{transform-box:fill-box;transform-origin:center;opacity:0;}
     @keyframes spin{to{transform:rotate(360deg);}}
+    @media(min-width:561px){.enso .ring-spin{opacity:1;animation:spin 14s linear infinite;}}
+    @media(prefers-reduced-motion:reduce){.enso .ring-spin{animation:none;opacity:0;}}
     .photo-ring{position:relative;z-index:2;width:82%;aspect-ratio:1/1;border-radius:50%;overflow:hidden;
       -webkit-mask:radial-gradient(circle at 50% 42%, #000 46%, rgba(0,0,0,.5) 64%, transparent 82%), linear-gradient(180deg, #000 52%, transparent 97%);
       -webkit-mask-composite:source-in;
