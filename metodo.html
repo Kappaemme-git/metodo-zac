@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0A1326" />
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <title>Il Metodo ZAC — Le 5 fasi del percorso</title>
+  <meta name="description" content="Il Metodo ZAC spiegato: i principi, le 5 fasi di crescita e come si costruisce un percorso di allenamento progressivo, dalle basi al dominio." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500;1,9..144,600&family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* --- pagina metodo --- */
+    .page-hero{position:relative;overflow:hidden;padding:160px 0 90px;
+      background:radial-gradient(90% 80% at 70% 10%,#163055 0%,var(--ink-2) 50%,#070F1C 100%);}
+    .page-hero .wrap{position:relative;z-index:2;text-align:center;}
+    .page-hero .eyebrow{justify-content:center;}
+    .page-hero .back{display:inline-flex;align-items:center;gap:9px;color:var(--muted);font-family:'Oswald',sans-serif;font-size:13px;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;margin-bottom:26px;transition:color .3s;}
+    .page-hero .back:hover{color:var(--gold-bright);}
+    .page-hero h1{font-size:clamp(40px,6vw,78px);margin:18px 0 0;}
+    .page-hero h1 .gold{color:var(--gold-bright);font-family:'Fraunces',serif;font-style:italic;font-weight:500;text-transform:none;}
+    .page-hero .lead{max-width:580px;color:var(--text);font-size:17px;line-height:1.75;margin:24px auto 0;}
+
+    .principles{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;padding:80px 0;}
+    .principle{border:1px solid var(--line-soft);border-radius:8px;padding:32px 28px;background:linear-gradient(180deg,#10213C,#0C1A30);}
+    .principle .k{font-family:'Oswald',sans-serif;font-weight:600;letter-spacing:.2em;font-size:12px;color:var(--gold);text-transform:uppercase;}
+    .principle h3{font-size:22px;margin:14px 0 10px;}
+    .principle p{color:var(--text);font-size:15px;line-height:1.65;}
+    @media(max-width:780px){.principles{grid-template-columns:1fr;padding:52px 0;}}
+
+    .phases-detail{padding:30px 0 110px;}
+    .mphase{display:grid;grid-template-columns:300px 1fr;gap:48px;align-items:center;padding:54px 0;border-top:1px solid var(--line-soft);}
+    .mphase:nth-child(even) .mphase-visual{order:2;}
+    .mphase-visual{position:relative;border:1px solid var(--line-soft);border-radius:10px;padding:36px 24px;text-align:center;background:linear-gradient(180deg,#10213C,#0C1A30);overflow:hidden;}
+    .mphase-visual .num{position:absolute;top:-18px;right:10px;font-family:'Oswald',sans-serif;font-weight:700;font-size:120px;line-height:1;color:transparent;-webkit-text-stroke:1.5px rgba(200,162,74,.12);}
+    .mphase-visual .fase{font-family:'Oswald',sans-serif;font-weight:600;letter-spacing:.24em;font-size:11px;color:var(--gold);text-transform:uppercase;position:relative;}
+    .mphase-visual .picon{height:54px;display:grid;place-items:center;margin:14px 0 4px;}
+    .mphase-visual .picon svg{width:44px;height:44px;}
+    .mphase-visual .belt-svg{width:130px;height:auto;display:block;margin:6px auto 0;filter:drop-shadow(0 8px 10px rgba(0,0,0,.45));}
+    .mphase-body h2{font-size:clamp(26px,3.4vw,38px);margin-bottom:14px;}
+    .mphase-body .sub{color:var(--gold-bright);font-family:'Fraunces',serif;font-style:italic;font-size:18px;margin-bottom:16px;}
+    .mphase-body p{color:var(--text);font-size:16px;line-height:1.75;margin-bottom:20px;max-width:560px;}
+    .mphase-focus{list-style:none;display:grid;gap:12px;}
+    .mphase-focus li{display:flex;gap:12px;align-items:flex-start;color:var(--text);font-size:15px;}
+    .mphase-focus li::before{content:"";flex:none;width:7px;height:7px;border-radius:50%;background:var(--gold);margin-top:7px;}
+    @media(max-width:820px){.mphase{grid-template-columns:1fr;gap:28px;}.mphase:nth-child(even) .mphase-visual{order:0;}.mphase-visual{max-width:340px;}}
+
+    .method-cta{text-align:center;padding:110px 0;position:relative;overflow:hidden;background:linear-gradient(180deg,#0B1830,var(--ink));}
+    .method-cta::before{content:"";position:absolute;inset:0;background:radial-gradient(60% 100% at 50% 0%,rgba(200,162,74,.12),transparent 60%);}
+    .method-cta .wrap{position:relative;}
+    .method-cta h2{font-size:clamp(30px,5vw,56px);max-width:16ch;margin:0 auto 20px;}
+    .method-cta h2 .gold{color:var(--gold-bright);font-family:'Fraunces',serif;font-style:italic;font-weight:500;text-transform:none;}
+    .method-cta p{color:var(--muted);font-size:17px;max-width:480px;margin:0 auto 34px;}
+  </style>
+</head>
+<body id="top">
+
+  <!-- simbolo cintura -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="belt" viewBox="0 0 150 64">
+      <rect x="61" y="32" width="12" height="29" rx="3.5" fill="var(--b)"/>
+      <rect x="77" y="32" width="12" height="29" rx="3.5" fill="var(--b)"/>
+      <rect x="61" y="32" width="3.5" height="29" rx="1.75" fill="var(--d)" opacity=".4"/>
+      <rect x="77" y="32" width="3.5" height="29" rx="1.75" fill="var(--d)" opacity=".4"/>
+      <rect x="66.6" y="35" width="1.6" height="23" rx=".8" fill="var(--d)" opacity=".55"/>
+      <rect x="82.6" y="35" width="1.6" height="23" rx=".8" fill="var(--d)" opacity=".55"/>
+      <rect x="61" y="55" width="12" height="6" rx="1.5" fill="var(--d)"/>
+      <rect x="77" y="55" width="12" height="6" rx="1.5" fill="var(--d)"/>
+      <rect x="6" y="19" width="60" height="17" rx="4" fill="var(--b)"/>
+      <rect x="84" y="19" width="60" height="17" rx="4" fill="var(--b)"/>
+      <rect x="6" y="30" width="60" height="6" rx="3" fill="var(--d)" opacity=".5"/>
+      <rect x="84" y="30" width="60" height="6" rx="3" fill="var(--d)" opacity=".5"/>
+      <rect x="10" y="21" width="52" height="2.4" rx="1.2" fill="var(--l)" opacity=".5"/>
+      <rect x="88" y="21" width="52" height="2.4" rx="1.2" fill="var(--l)" opacity=".5"/>
+      <rect x="10" y="26.5" width="54" height="1.5" rx=".75" fill="var(--d)" opacity=".6"/>
+      <rect x="86" y="26.5" width="54" height="1.5" rx=".75" fill="var(--d)" opacity=".6"/>
+      <rect x="57" y="15" width="36" height="25" rx="6.5" fill="var(--b)"/>
+      <rect x="57" y="29" width="36" height="11" rx="6" fill="var(--d)" opacity=".5"/>
+      <rect x="61" y="17" width="28" height="3" rx="1.5" fill="var(--l)" opacity=".55"/>
+      <rect x="73" y="16" width="4" height="23" rx="2" fill="var(--d)" opacity=".45"/>
+    </symbol>
+  </svg>
+
+  <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
+
+  <!-- NAV -->
+  <nav id="nav">
+    <div class="wrap">
+      <a class="brand" href="index.html">
+        <span class="mark">
+          <svg class="z-mark" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+            <path class="z-back" d="M16 17 H48 L16 47 H48" stroke="#9C7B30" stroke-width="8.5" stroke-linejoin="miter" stroke-linecap="square"/>
+            <path class="z-front" d="M16 17 H48 L16 47 H48" stroke="#E6C878" stroke-width="8.5" stroke-linejoin="miter" stroke-linecap="square" pathLength="1"/>
+          </svg>
+        </span>
+        <span class="bt"><span class="b1">METODO <b>ZAC</b></span><span class="b2">DISCIPLINA · STRUTTURA · EVOLUZIONE</span></span>
+      </a>
+      <div class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="metodo.html" class="active">Il Metodo</a>
+        <a href="index.html#chi-sono">Chi Sono</a>
+        <a href="index.html#programma">Programma Gratuito</a>
+        <a href="index.html#contatti">Contatti</a>
+        <a href="index.html#chi-sono" class="btn btn-ghost">Chi è ZAC</a>
+      </div>
+      <button class="menu-btn" aria-label="Menu" aria-expanded="false" onclick="this.closest('nav').classList.toggle('open');this.setAttribute('aria-expanded',this.closest('nav').classList.contains('open'))">☰</button>
+    </div>
+  </nav>
+
+  <!-- HERO PAGINA -->
+  <header class="page-hero">
+    <div class="wrap">
+      <a class="back" href="index.html">← Torna alla home</a>
+      <p class="eyebrow reveal">Il Metodo</p>
+      <h1 class="reveal d1">Non schede.<br>Un <span class="gold">sistema.</span></h1>
+      <p class="lead reveal d2">Il Metodo ZAC è un percorso progressivo in cinque fasi. Ogni fase costruisce sulla precedente: prima le fondamenta, poi il controllo, infine il dominio. Niente improvvisazione — solo principi chiari, applicati con costanza.</p>
+    </div>
+  </header>
+
+  <!-- PRINCIPI -->
+  <section class="band-light">
+    <div class="wrap">
+      <div class="principles">
+        <div class="principle reveal" style="background:#fff;border-color:var(--line-dark);">
+          <span class="k" style="color:var(--gold-deep);">01 — Disciplina</span>
+          <h3 style="color:var(--ink-on-light);">La costanza prima di tutto</h3>
+          <p style="color:#41506a;">La costanza è il ponte tra dove sei oggi e dove vuoi arrivare. Il risultato non è talento: è la somma di scelte ripetute nel tempo.</p>
+        </div>
+        <div class="principle reveal d1" style="background:#fff;border-color:var(--line-dark);">
+          <span class="k" style="color:var(--gold-deep);">02 — Struttura</span>
+          <h3 style="color:var(--ink-on-light);">Ogni cosa ha uno scopo</h3>
+          <p style="color:#41506a;">Ogni settimana, ogni esercizio, ogni carico ha un motivo. Il percorso è progettato, non improvvisato: sai sempre perché stai facendo quello che fai.</p>
+        </div>
+        <div class="principle reveal d2" style="background:#fff;border-color:var(--line-dark);">
+          <span class="k" style="color:var(--gold-deep);">03 — Evoluzione</span>
+          <h3 style="color:var(--ink-on-light);">Un 1% alla volta</h3>
+          <p style="color:#41506a;">Si migliora ogni giorno, con piccoli passi misurabili. Check periodici per leggere i progressi e adattare il programma alla persona.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LE 5 FASI IN DETTAGLIO -->
+  <section id="fasi" class="fasi phases-detail">
+    <div class="wrap">
+      <div class="section-head reveal" style="text-align:center;margin:0 auto 30px;max-width:620px;">
+        <p class="eyebrow" style="justify-content:center;">Le 5 fasi</p>
+        <h2 style="font-size:clamp(30px,4.4vw,48px);margin-top:16px;">Dalle basi al <span class="gold" style="color:var(--gold-bright);font-family:'Fraunces',serif;font-style:italic;font-weight:500;text-transform:none;">dominio.</span></h2>
+      </div>
+
+      <!-- FASE I -->
+      <article class="mphase reveal">
+        <div class="mphase-visual">
+          <span class="num">I</span>
+          <div class="fase">Fase I</div>
+          <div class="picon"><svg viewBox="0 0 48 48" fill="none"><path d="M24 6 A18 18 0 1 1 12 11" stroke="#E6C878" stroke-width="3" stroke-linecap="round"/></svg></div>
+          <svg class="belt-svg" viewBox="0 0 150 64" style="--b:#E7E3D7;--d:#A9A492;--l:#FFFFFF" aria-hidden="true"><use href="#belt"/></svg>
+        </div>
+        <div class="mphase-body">
+          <h2>Dominio del corpo</h2>
+          <p class="sub">Costruisci le basi.</p>
+          <p>Tutto parte da qui. Si lavora sulla qualità del movimento, sulla mobilità e sul controllo: imparare a muoversi bene prima di muovere tanto. È la fase che rende solido tutto il resto.</p>
+          <ul class="mphase-focus">
+            <li>Tecnica e padronanza degli schemi di base</li>
+            <li>Mobilità, stabilità e controllo</li>
+            <li>Costruzione delle fondamenta di forza</li>
+          </ul>
+        </div>
+      </article>
+
+      <!-- FASE II -->
+      <article class="mphase reveal">
+        <div class="mphase-visual">
+          <span class="num">II</span>
+          <div class="fase">Fase II</div>
+          <div class="picon"><svg viewBox="0 0 48 48" fill="none"><path d="M5 38 18 16l10 13 7-10 13 19Z" stroke="#E6C878" stroke-width="2.6" stroke-linejoin="round"/><path d="M18 16l4 6" stroke="#E6C878" stroke-width="2" stroke-linecap="round"/></svg></div>
+          <svg class="belt-svg" viewBox="0 0 150 64" style="--b:#E0B63A;--d:#A07B1C;--l:#F5D572" aria-hidden="true"><use href="#belt"/></svg>
+        </div>
+        <div class="mphase-body">
+          <h2>Dominio della tensione</h2>
+          <p class="sub">Aumenta la qualità dello stimolo.</p>
+          <p>Quando il movimento è solido, si lavora sulla tensione: imparare a generare uno stimolo efficace, sentire il muscolo lavorare e rendere ogni ripetizione una ripetizione che conta.</p>
+          <ul class="mphase-focus">
+            <li>Connessione mente-muscolo</li>
+            <li>Tempo sotto tensione e controllo del carico</li>
+            <li>Qualità dello stimolo prima della quantità</li>
+          </ul>
+        </div>
+      </article>
+
+      <!-- FASE III -->
+      <article class="mphase reveal">
+        <div class="mphase-visual">
+          <span class="num">III</span>
+          <div class="fase">Fase III</div>
+          <div class="picon"><svg viewBox="0 0 48 48" fill="none"><path d="M24 10c4 6 4 12 0 18-4-6-4-12 0-18Z" stroke="#E6C878" stroke-width="2.3"/><path d="M24 28c-5-3-11-3-16 1 3 6 10 8 16 5M24 28c5-3 11-3 16 1-3 6-10 8-16 5" stroke="#E6C878" stroke-width="2.3" stroke-linejoin="round"/></svg></div>
+          <svg class="belt-svg" viewBox="0 0 150 64" style="--b:#3D71B6;--d:#274C82;--l:#669AD8" aria-hidden="true"><use href="#belt"/></svg>
+        </div>
+        <div class="mphase-body">
+          <h2>Consapevolezza strutturale</h2>
+          <p class="sub">Comprendi il tuo corpo.</p>
+          <p>Qui si diventa autonomi. Si impara a gestire lo sforzo, ad ascoltare i segnali del corpo e a capire quando spingere e quando recuperare. Il programma comincia a parlare con te.</p>
+          <ul class="mphase-focus">
+            <li>Gestione dello sforzo e del recupero</li>
+            <li>Lettura dei feedback e dei segnali del corpo</li>
+            <li>Autonomia e consapevolezza nell'allenamento</li>
+          </ul>
+        </div>
+      </article>
+
+      <!-- FASE IV -->
+      <article class="mphase reveal">
+        <div class="mphase-visual">
+          <span class="num">IV</span>
+          <div class="fase">Fase IV</div>
+          <div class="picon"><svg viewBox="0 0 48 48" fill="none"><path d="M24 7 40 16v16L24 41 8 32V16L24 7Z" stroke="#E6C878" stroke-width="2.4" stroke-linejoin="round"/><path d="M24 16v16M16 20l16 8M32 20l-16 8" stroke="#E6C878" stroke-width="1.6" opacity=".7"/></svg></div>
+          <svg class="belt-svg" viewBox="0 0 150 64" style="--b:#7B4C28;--d:#502E16;--l:#A06A3C" aria-hidden="true"><use href="#belt"/></svg>
+        </div>
+        <div class="mphase-body">
+          <h2>Dominio dell'intensità</h2>
+          <p class="sub">Mantieni la qualità sotto stress.</p>
+          <p>Si alza l'asticella. Tecniche avanzate, carichi importanti, intensità elevata — ma senza mai perdere il controllo costruito nelle fasi precedenti. Spingere i limiti restando precisi.</p>
+          <ul class="mphase-focus">
+            <li>Tecniche di intensificazione</li>
+            <li>Gestione del carico ad alta intensità</li>
+            <li>Controllo e qualità anche sotto sforzo</li>
+          </ul>
+        </div>
+      </article>
+
+      <!-- FASE V -->
+      <article class="mphase reveal">
+        <div class="mphase-visual">
+          <span class="num">V</span>
+          <div class="fase">Fase V</div>
+          <div class="picon"><svg viewBox="0 0 48 48" fill="none"><circle cx="24" cy="22" r="15" stroke="#E6C878" stroke-width="2.4"/><circle cx="24" cy="22" r="8" stroke="#E6C878" stroke-width="1.8" opacity=".7"/><path d="M24 7v8M9 22h8M31 22h8" stroke="#E6C878" stroke-width="1.6" opacity=".6"/></svg></div>
+          <svg class="belt-svg" viewBox="0 0 150 64" style="--b:#22262F;--d:#0D0F14;--l:#3C424E" aria-hidden="true">
+            <use href="#belt"/>
+            <rect x="78.5" y="36" width="9" height="3" rx="1" fill="#C8A24A"/>
+            <rect x="78.5" y="41" width="9" height="3" rx="1" fill="#C8A24A"/>
+          </svg>
+        </div>
+        <div class="mphase-body">
+          <h2>Maturità di dominio</h2>
+          <p class="sub">Equilibrio. Controllo. Massimo potenziale.</p>
+          <p>L'ultima fase non è un traguardo, è uno stato. Padronanza completa del proprio corpo e del proprio allenamento: equilibrio tra forza, tecnica e testa. Sei tu a guidare il percorso.</p>
+          <ul class="mphase-focus">
+            <li>Padronanza completa del movimento e del carico</li>
+            <li>Equilibrio tra corpo e mente</li>
+            <li>Espressione del massimo potenziale</li>
+          </ul>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="method-cta">
+    <div class="wrap">
+      <p class="eyebrow reveal" style="justify-content:center;">Inizia il percorso</p>
+      <h2 class="reveal d1">Il primo passo arriva ad <span class="gold">agosto.</span></h2>
+      <p class="reveal d2">Il programma gratuito di 6 mesi del Metodo ZAC sarà scaricabile ad agosto.</p>
+      <div class="reveal d3"><a href="index.html#programma" class="btn btn-primary">Vai al programma <span class="arr">→</span></a></div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer id="contatti">
+    <div class="wrap">
+      <a class="brand" href="index.html">
+        <span class="mark">
+          <svg class="z-mark" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+            <path class="z-back" d="M16 17 H48 L16 47 H48" stroke="#9C7B30" stroke-width="8.5" stroke-linejoin="miter" stroke-linecap="square"/>
+            <path class="z-front" d="M16 17 H48 L16 47 H48" stroke="#E6C878" stroke-width="8.5" stroke-linejoin="miter" stroke-linecap="square" pathLength="1"/>
+          </svg>
+        </span>
+        <span class="bt"><span class="b1">METODO <b>ZAC</b></span><span class="b2">DISCIPLINA · STRUTTURA · EVOLUZIONE</span></span>
+      </a>
+      <div class="links">
+        <a href="metodo.html">Il Metodo</a>
+        <a href="metodo.html#fasi">Le Fasi</a>
+        <a href="index.html#programma">Programma Gratuito</a>
+        <a href="index.html#chi-sono">Chi Sono</a>
+        <a href="https://www.instagram.com/luigizaccone/" target="_blank" rel="noopener">Instagram</a>
+      </div>
+    </div>
+    <p class="foot-note">© <span id="year"></span> Metodo ZAC — Luigi Zaccone · Disciplina · Struttura · Evoluzione</p>
+  </footer>
+
+  <script>
+    const nav=document.getElementById('nav');
+    const bar=document.getElementById('scrollProgress');
+    const onScroll=()=>{
+      nav.classList.toggle('solid',window.scrollY>20);
+      const d=document.documentElement, max=d.scrollHeight-d.clientHeight;
+      bar.style.width=(max>0?(d.scrollTop/max*100):0)+'%';
+    };
+    onScroll();addEventListener('scroll',onScroll,{passive:true});
+
+    const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if(!reduce){
+      const io=new IntersectionObserver((entries)=>{
+        entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});
+      },{threshold:.14,rootMargin:'0px 0px -8% 0px'});
+      document.querySelectorAll('.reveal:not(.in)').forEach(el=>io.observe(el));
+    } else {
+      document.querySelectorAll('.reveal').forEach(el=>el.classList.add('in'));
+    }
+    document.querySelectorAll('.nav-links a').forEach(a=>a.addEventListener('click',()=>nav.classList.remove('open')));
+
+    document.getElementById('year').textContent=new Date().getFullYear();
+  </script>
+</body>
+</html>
