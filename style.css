@@ -288,14 +288,21 @@
 /* ---------- RIFINITURE MOBILE ---------- */
 @media(max-width:560px){
   .wrap{padding:0 22px;}
-  .hero{padding:118px 0 60px;}
-  .hero-visual{max-width:300px;margin:0 auto;}
+  /* nav: niente tagline che va a capo */
+  .brand .bt .b2{display:none;}
+  .brand .bt .b1{font-size:20px;}
+  .brand .mark{width:44px;height:44px;}
+  nav .wrap{height:74px;}
+  .hero{padding:108px 0 56px;}
+  .hero-visual{max-width:280px;margin:0 auto;}
+  .hero-mtn{display:none;}            /* le montagnine si sovrapponevano all'emblema */
   .hero h1{font-size:40px;}
   .hero .lead{max-width:100%;}
   .hero-meta{font-size:11px;letter-spacing:.12em;}
-  .hero-emblem{width:92%;}
-  .hero-emblem .em-zac{font-size:64px;}
+  .hero-emblem{width:90%;background:radial-gradient(circle at 50% 48%, rgba(8,15,28,.7), rgba(8,15,28,0) 66%);}
+  .hero-emblem .em-zac{font-size:58px;}
   .hero-emblem .em-kicker{font-size:12px;letter-spacing:.38em;}
+  .hero-emblem .em-rule{margin:14px 0;}
   .hero-emblem .em-tri{font-size:9px;letter-spacing:.1em;}
   .section-head h2,.fhead h2,.about h2,.prog-card h2,.contact-card h2,.cta-band h2,.method-cta h2{font-size:32px;line-height:1.12;}
   .sectionHeaderTitle{font-size:34px;}
