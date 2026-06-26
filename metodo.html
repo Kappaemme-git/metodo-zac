@@ -62,41 +62,52 @@
 
     /* 5 fasi */
     .phases-detail{padding:30px 0 110px;}
-    .phases-intro{max-width:620px;margin:0 auto 30px;text-align:center;color:var(--muted);font-size:16px;line-height:1.7;}
-    .mphase{display:grid;grid-template-columns:300px 1fr;gap:48px;align-items:center;padding:54px 0;border-top:1px solid var(--line-soft);}
-    .mphase:nth-child(even) .mphase-visual{order:2;}
-    .mphase-visual{position:relative;border:1px solid var(--line-soft);border-radius:12px;padding:36px 24px;text-align:center;background:linear-gradient(180deg,#10213C,#0C1A30);overflow:hidden;}
-    .mphase-visual .num{position:absolute;top:-18px;right:10px;font-family:'Oswald',sans-serif;font-weight:700;font-size:120px;line-height:1;color:transparent;-webkit-text-stroke:1.5px rgba(200,162,74,.12);}
-    .mphase-visual .fase{font-family:'Oswald',sans-serif;font-weight:600;letter-spacing:.24em;font-size:11px;color:var(--gold);text-transform:uppercase;position:relative;}
-    .mphase-visual .picon{height:54px;display:grid;place-items:center;margin:14px 0 4px;}
-    .mphase-visual .picon svg{width:44px;height:44px;}
-    .mphase-visual .belt-svg{width:130px;height:auto;display:block;margin:6px auto 0;filter:drop-shadow(0 8px 10px rgba(0,0,0,.45));}
-    .mphase-body h2{font-size:clamp(26px,3.4vw,38px);margin-bottom:10px;}
-    .mphase-body .sub{color:var(--gold-bright);font-family:'Fraunces',serif;font-style:italic;font-size:18px;line-height:1.4;margin-bottom:18px;max-width:560px;}
-    .mphase-body p{color:var(--text);font-size:16px;line-height:1.75;margin-bottom:22px;max-width:560px;}
-    .mphase-obj{font-family:'Oswald',sans-serif;font-weight:600;letter-spacing:.16em;font-size:11px;text-transform:uppercase;color:var(--muted);margin-bottom:12px;}
-    .mphase-focus{list-style:none;display:grid;gap:11px;margin-bottom:22px;}
-    .mphase-focus li{display:flex;gap:12px;align-items:flex-start;color:var(--text);font-size:15px;}
-    .mphase-focus li::before{content:"";flex:none;width:7px;height:7px;border-radius:50%;background:var(--gold);margin-top:7px;}
-    .mphase-ready{border-left:2px solid var(--line);padding-left:16px;color:var(--muted);font-size:14.5px;line-height:1.6;max-width:540px;}
+    .phases-intro{max-width:680px;margin:0 0 46px;text-align:left;color:var(--muted);font-size:16px;line-height:1.75;}
+    .mphase{position:relative;display:grid;grid-template-columns:minmax(330px,420px) minmax(0,1fr);align-items:center;justify-items:stretch;gap:72px;max-width:1120px;margin:0 auto;padding:74px 0 82px;text-align:left;}
+    .mphase::before{content:"";position:absolute;top:0;left:50%;width:min(100%,860px);height:1px;transform:translateX(-50%);background:linear-gradient(90deg,transparent,var(--line-soft),rgba(200,162,74,.22),var(--line-soft),transparent);}
+    .mphase:nth-of-type(even){grid-template-columns:minmax(0,1fr) minmax(330px,420px);}
+    .mphase:nth-of-type(even) .mphase-visual{order:2;}
+    .mphase:nth-of-type(even) .mphase-body{order:1;}
+    .mphase-visual{position:relative;width:100%;max-width:420px;min-height:282px;border:1px solid var(--line-soft);border-radius:14px;padding:42px 34px 38px;text-align:center;background:radial-gradient(70% 90% at 50% 0%,#142849,#0C1A30 72%);overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+    .mphase-visual::after{content:"";position:absolute;inset:14px;border:1px solid rgba(200,162,74,.08);border-radius:10px;pointer-events:none;}
+    .mphase-visual .num{position:absolute;inset:8px 0 auto;z-index:0;width:100%;font-family:'Oswald',sans-serif;font-weight:700;font-size:118px;line-height:1;color:transparent;text-align:center;-webkit-text-stroke:1.4px rgba(200,162,74,.11);}
+    .mphase-visual .fase{position:relative;z-index:2;font-family:'Oswald',sans-serif;font-weight:600;letter-spacing:.26em;font-size:11px;color:var(--gold);text-transform:uppercase;padding-left:.26em;}
+    .mphase-visual .picon{position:relative;z-index:2;height:58px;display:grid;place-items:center;margin:18px 0 8px;}
+    .mphase-visual .picon svg{width:46px;height:46px;}
+    .mphase-visual .belt-svg{position:relative;z-index:2;width:174px;height:74px;display:block;margin:2px auto 0;filter:drop-shadow(0 10px 14px rgba(0,0,0,.5));}
+    .mphase-body{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;width:100%;max-width:640px;}
+    .mphase-body h2{font-size:clamp(30px,3.6vw,46px);margin-bottom:12px;text-align:left;}
+    .mphase-body .sub{color:var(--gold-bright);font-family:'Fraunces',serif;font-style:italic;font-size:clamp(18px,2vw,22px);line-height:1.45;margin:0 0 22px;max-width:680px;text-align:left;}
+    .mphase-body p{color:var(--text);font-size:16.5px;line-height:1.78;margin:0 0 24px;max-width:680px;text-align:left;}
+    .mphase-obj{font-family:'Oswald',sans-serif;font-weight:600;letter-spacing:.22em;font-size:11px;text-transform:uppercase;color:var(--muted);margin:8px 0 16px;padding-left:.22em;text-align:left;}
+    .mphase-focus{list-style:none;display:grid;grid-template-columns:repeat(2,minmax(200px,1fr));gap:0 36px;width:100%;margin:0 0 30px;}
+    .mphase-focus li{display:flex;align-items:flex-start;gap:13px;color:var(--text);font-size:15.5px;line-height:1.5;text-align:left;padding:15px 2px;border-top:1px solid rgba(255,255,255,.07);}
+    .mphase-focus li:nth-child(1),.mphase-focus li:nth-child(2){border-top:0;}
+    .mphase-focus li::before{content:"";flex:none;width:18px;height:18px;margin-top:1px;background:var(--gold);-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4 12.5l5 5L20 6' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4 12.5l5 5L20 6' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat;filter:drop-shadow(0 0 6px rgba(200,162,74,.35));}
+    .mphase-ready{position:relative;border-left:0;padding:24px 0 0;color:var(--muted);font-size:15px;line-height:1.68;max-width:620px;text-align:left;}
+    .mphase-ready::before{content:"";position:absolute;top:0;left:0;width:120px;height:1px;background:linear-gradient(90deg,var(--gold),transparent);}
     .mphase-ready b{color:var(--ivory);font-weight:600;}
-    @media(max-width:820px){.mphase{grid-template-columns:1fr;gap:28px;}.mphase:nth-child(even) .mphase-visual{order:0;}.mphase-visual{max-width:340px;}}
+    @media(max-width:900px){.mphase,.mphase:nth-of-type(even){grid-template-columns:1fr;gap:28px;padding:56px 0 66px;}.mphase:nth-of-type(even) .mphase-visual,.mphase:nth-of-type(even) .mphase-body{order:initial;}.mphase-visual{max-width:520px;min-height:230px;}.mphase-focus{grid-template-columns:1fr;}}
 
     /* sistema focus (light) */
-    .focus-tags{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px;}
+    .focus-tags{display:flex;flex-wrap:wrap;gap:12px;margin:30px 0 0;}
     .focus-tags span{font-family:'Oswald',sans-serif;font-weight:500;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-on-light);border:1px solid var(--line-dark);border-radius:999px;padding:10px 18px;background:#fff;}
 
     /* programmazione */
-    .cycle{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
-    .cycle .step{position:relative;border:1px solid var(--line-soft);border-radius:12px;padding:30px 26px;background:linear-gradient(180deg,#10213C,#0C1A30);}
-    .cycle .step .n{font-family:'Oswald',sans-serif;font-weight:600;color:var(--gold);font-size:12px;letter-spacing:.2em;text-transform:uppercase;}
-    .cycle .step h3{font-size:19px;margin:12px 0 8px;}
+    .cycle{display:grid;grid-template-columns:repeat(3,1fr);gap:0;}
+    .cycle .step{position:relative;padding:6px 34px;text-align:left;}
+    .cycle .step:first-child{padding-left:0;}
+    .cycle .step + .step{border-left:1px solid rgba(255,255,255,.08);}
+    .cycle .step .num{display:block;font-family:'Oswald',sans-serif;font-weight:700;font-size:50px;line-height:1;color:transparent;-webkit-text-stroke:1.2px rgba(200,162,74,.55);margin-bottom:14px;}
+    .cycle .step .n{font-family:'Oswald',sans-serif;font-weight:600;color:var(--gold-bright);font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;}
+    .cycle .step h3{font-size:19px;margin:10px 0 9px;}
     .cycle .step p{color:var(--text);font-size:14.5px;line-height:1.65;}
-    .macro{margin-top:18px;border:1px solid var(--line);border-radius:12px;padding:30px 32px;background:rgba(200,162,74,.05);}
-    .macro .k{font-family:'Oswald',sans-serif;font-weight:600;letter-spacing:.18em;font-size:12px;color:var(--gold-bright);text-transform:uppercase;}
-    .macro h3{font-size:20px;margin:10px 0 8px;}
-    .macro p{color:var(--text);font-size:15.5px;line-height:1.7;max-width:680px;}
-    @media(max-width:760px){.cycle{grid-template-columns:1fr;}}
+    .macro{position:relative;margin:46px 0 0;padding:34px 0 0;max-width:680px;text-align:left;}
+    .macro::before{content:"";position:absolute;top:0;left:0;width:130px;height:1px;background:linear-gradient(90deg,var(--gold),transparent);}
+    .macro .k{font-family:'Oswald',sans-serif;font-weight:600;letter-spacing:.2em;font-size:11.5px;color:var(--gold-bright);text-transform:uppercase;}
+    .macro h3{font-size:21px;margin:12px 0 10px;}
+    .macro p{color:var(--text);font-size:15.5px;line-height:1.72;max-width:600px;}
+    @media(max-width:760px){.cycle{grid-template-columns:1fr;}.cycle .step,.cycle .step:first-child{padding:18px 0;}.cycle .step + .step{border-left:0;border-top:1px solid rgba(255,255,255,.08);}}
 
     /* monitoraggio & check (light) */
     .monit-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start;}
@@ -118,15 +129,6 @@
     .statement .big b{color:var(--gold-bright);font-weight:600;}
     .statement p{color:var(--text);font-size:17px;line-height:1.85;margin-top:24px;max-width:680px;}
 
-    /* conclusione */
-    .conclusione{text-align:center;padding:120px 0;position:relative;overflow:hidden;background:radial-gradient(70% 120% at 50% 0%,#15294a,var(--ink) 60%);border-top:1px solid var(--line-soft);}
-    .conclusione::before{content:"";position:absolute;inset:0;background:radial-gradient(50% 90% at 50% 0%,rgba(200,162,74,.14),transparent 60%);}
-    .conclusione .wrap{position:relative;max-width:760px;}
-    .conclusione .lead{color:var(--text);font-size:18px;line-height:1.85;margin-bottom:42px;}
-    .conclusione .formula{font-family:'Oswald',sans-serif;font-weight:700;text-transform:uppercase;font-size:clamp(30px,5vw,58px);letter-spacing:.03em;line-height:1.06;color:var(--ivory);}
-    .conclusione .formula b{color:var(--gold-bright);}
-    .conclusione .sign{font-family:'Fraunces',serif;font-style:italic;color:var(--muted);font-size:20px;margin-top:18px;}
-    .conclusione .cta{margin-top:44px;}
   </style>
 </head>
 <body id="top">
@@ -175,6 +177,7 @@
         <a href="index.html">Home</a>
         <a href="metodo.html" class="active">Il Metodo</a>
         <a href="index.html#chi-sono">Chi Sono</a>
+        <a href="risultati.html">Risultati</a>
         <a href="index.html#programma">Programma Gratuito</a>
         <a href="index.html#contatti">Contatti</a>
         <a href="index.html#chi-sono" class="btn btn-ghost">Chi è ZAC</a>
@@ -213,7 +216,7 @@
   <!-- 3. I TRE PILASTRI -->
   <section class="band-light">
     <div class="wrap">
-      <div class="mhead center reveal" style="padding-top:84px;">
+      <div class="mhead reveal" style="padding-top:84px;">
         <p class="eyebrow">I tre pilastri</p>
         <h2 style="color:var(--ink-on-light);">Su cosa si <span class="gold">regge</span> il metodo.</h2>
       </div>
@@ -276,7 +279,7 @@
   <!-- 5. LE 5 FASI -->
   <section id="fasi" class="fasi phases-detail">
     <div class="wrap">
-      <div class="mhead center reveal" style="max-width:640px;">
+      <div class="mhead reveal" style="max-width:640px;">
         <p class="eyebrow">Le 5 fasi</p>
         <h2>Stati di maturazione, non <span class="gold">gradini.</span></h2>
       </div>
@@ -408,7 +411,7 @@
     <div class="wrap" style="padding:90px 0;">
       <div class="mhead reveal">
         <p class="eyebrow">Il sistema Focus</p>
-        <h2 style="color:var(--ink-on-light);">La fase dice <span class="gold">dove sei.</span> Il focus dice su cosa lavori.</h2>
+        <h2 style="color:var(--ink-on-light);">La fase dice <span class="gold">dove sei.</span><br>Il focus dice su cosa lavori.</h2>
         <p style="color:#41506a;">La Fase rappresenta il livello generale del soggetto; il Focus rappresenta l'aspetto specifico su cui si lavora in quel momento. Il Focus non cambia la fase: la integra. Due persone possono essere nella stessa fase con focus diversi.</p>
       </div>
       <div class="focus-tags reveal d1">
@@ -433,20 +436,23 @@
         <h2>Si lavora per <span class="gold">cicli</span>, non a caso.</h2>
         <p>Il Metodo ZAC struttura il lavoro in microcicli e macrocicli: ogni periodo ha una funzione e un momento preciso.</p>
       </div>
-      <p class="mphase-obj reveal d1" style="margin-bottom:14px;">Microciclo · 4–6 settimane</p>
+      <p class="mphase-obj reveal d1" style="margin-bottom:22px;">Microciclo · 4–6 settimane</p>
       <div class="cycle reveal d1">
         <div class="step">
-          <div class="n">01 · Assestamento</div>
+          <span class="num">01</span>
+          <div class="n">Assestamento</div>
           <h3>Entrare nel lavoro</h3>
           <p>Il soggetto entra nella logica del ciclo e prende confidenza con gli stimoli previsti.</p>
         </div>
         <div class="step">
-          <div class="n">02 · Progressione</div>
+          <span class="num">02</span>
+          <div class="n">Progressione</div>
           <h3>Aumentare lo stimolo</h3>
           <p>Si alza gradualmente il livello di lavoro, in modo controllato e misurabile.</p>
         </div>
         <div class="step">
-          <div class="n">03 · Consolidamento</div>
+          <span class="num">03</span>
+          <div class="n">Consolidamento</div>
           <h3>Fissare i progressi</h3>
           <p>Si stabilizzano i miglioramenti ottenuti, rendendoli solidi e ripetibili.</p>
         </div>
@@ -464,7 +470,7 @@
     <div class="wrap" style="padding:90px 0;">
       <div class="mhead reveal" style="margin-bottom:40px;">
         <p class="eyebrow">Monitoraggio e check</p>
-        <h2 style="color:var(--ink-on-light);">Il progresso non è solo un <span class="gold">numero.</span></h2>
+        <h2 style="color:var(--ink-on-light);">Il progresso non è solo<br>un <span class="gold">numero.</span></h2>
       </div>
       <div class="monit-grid">
         <div class="reveal">
@@ -514,17 +520,6 @@
       <p class="eyebrow reveal">L'evoluzione</p>
       <p class="big reveal d1" style="margin-top:22px;color:var(--ink-on-light);">È il <b style="color:var(--gold-deep);">cuore</b> del Metodo ZAC.</p>
       <p class="reveal d2" style="color:#41506a;">L'obiettivo non è ottenere un risultato rapido e temporaneo, ma costruire qualcosa che dura nel tempo. La crescita fisica non è il punto di partenza: è la conseguenza naturale di disciplina, struttura, controllo, progressione e consapevolezza.</p>
-    </div>
-  </section>
-
-  <!-- 12. CONCLUSIONE -->
-  <section class="conclusione">
-    <div class="wrap">
-      <p class="eyebrow reveal" style="justify-content:center;">In sintesi</p>
-      <p class="lead reveal d1" style="margin-top:22px;">Il Metodo ZAC non nasce per creare dipendenza dal coach, ma per formare individui più consapevoli. Non nasce per offrire una scheda, ma per costruire un percorso. Non insegue risultati temporanei: costruisce risultati duraturi.</p>
-      <p class="formula reveal d2"><b>Disciplina.</b> Struttura. <b>Evoluzione.</b></p>
-      <p class="sign reveal d2">Questo è il Metodo ZAC.</p>
-      <div class="cta reveal d3"><a href="index.html#programma" class="btn btn-primary">Scopri il programma gratuito <span class="arr">→</span></a></div>
     </div>
   </section>
 
