@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500;1,9..144,600&family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css?v=hero-circle-2" />
 </head>
 <body id="top">
 
@@ -79,48 +79,54 @@
     <div class="hero-tint" aria-hidden="true"></div>
     <div class="side-label">Metodo ZAC</div>
     <div class="wrap">
-      <div class="hero-grid">
-        <div class="hero-copy">
-          <p class="eyebrow reveal">Bodybuilding strutturato</p>
-          <h1 class="reveal d1">Costruisci il tuo fisico<br><span class="gold">con metodo.</span></h1>
-          <p class="tri reveal d2"><b>Ipertrofia</b><i>·</i><b>Forza</b><i>·</i><b>Definizione</b></p>
-          <p class="lead reveal d2">Il Metodo ZAC unisce bodybuilding, progressione e controllo tecnico: non una scheda casuale, ma un sistema per costruire massa, linee e consapevolezza.</p>
-          <div class="hero-cta reveal d3">
-            <a href="metodo.html" class="btn btn-primary">Scopri il metodo <span class="arr">→</span></a>
-            <a href="#chi-sono" class="btn btn-ghost">Chi è ZAC</a>
-          </div>
-          <div class="hero-meta reveal d4"><span>5 fasi</span> · <span>bodybuilding</span> · <span>zero scorciatoie</span></div>
+      <div class="hero-center">
+        <div class="hero-crest reveal" aria-label="Metodo ZAC">
+          <img src="assets/logo.png" alt="" />
         </div>
 
-        <div class="hero-visual reveal d2">
-          <div class="hero-label hero-label--top">Ipertrofia</div>
-          <div class="hero-label hero-label--right">Definizione</div>
-          <div class="hero-label hero-label--bottom">Progressione</div>
-          <!-- fisico nel cerchio -->
-          <div class="hero-photo hero-photo--bodybuilding">
-            <img src="assets/hero-physique.jpg" alt="Atleta bodybuilder durante un curl con bilanciere" />
-            <span class="hero-photo-veil"></span>
-          </div>
-          <div class="hero-logo-seal" aria-label="Metodo ZAC">
-            <img src="assets/logo.png" alt="" />
-          </div>
-          <!-- anello -->
-          <svg class="enso" viewBox="0 0 400 400" fill="none" aria-hidden="true">
+        <p class="eyebrow center reveal d1">Bodybuilding strutturato</p>
+
+        <div class="hero-title-wrap">
+          <svg class="zen-stroke" viewBox="0 0 800 470" fill="none" aria-hidden="true">
             <defs>
-              <linearGradient id="ensoG" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0" stop-color="#9C7B30"/><stop offset=".5" stop-color="#E6C878"/><stop offset="1" stop-color="#9C7B30"/>
+              <linearGradient id="zenGold" x1="150" y1="0" x2="650" y2="0" gradientUnits="userSpaceOnUse">
+                <stop offset="0" stop-color="#8F6C27" stop-opacity="0"/>
+                <stop offset=".5" stop-color="#E6C878" stop-opacity=".7"/>
+                <stop offset="1" stop-color="#8F6C27" stop-opacity="0"/>
               </linearGradient>
-              <radialGradient id="embBg">
-                <stop offset="0%" stop-color="#070E1B" stop-opacity=".5"/>
-                <stop offset="55%" stop-color="#070E1B" stop-opacity=".34"/>
-                <stop offset="100%" stop-color="#070E1B" stop-opacity="0"/>
-              </radialGradient>
             </defs>
-            <circle cx="200" cy="200" r="186" fill="url(#embBg)"/>
-            <circle cx="200" cy="200" r="178" stroke="url(#ensoG)" stroke-width="3.5" opacity="1"/>
-            <circle cx="200" cy="200" r="166" stroke="#E6C878" stroke-width="1" opacity=".28"/>
-            <circle class="ring-spin" cx="200" cy="200" r="178" stroke="#FCEBB6" stroke-width="4.5" stroke-linecap="round" stroke-dasharray="95 1023" opacity=".95"/>
+            <path class="zen-arc arc-top" d="M150 50C330 16 470 16 650 50" />
+            <path class="zen-arc arc-bot" d="M150 420C330 454 470 454 650 420" />
           </svg>
+          <div class="zen-grid" aria-hidden="true"></div>
+          <div class="hero-embers" aria-hidden="true">
+            <span></span><span></span><span></span><span></span><span></span>
+            <span></span><span></span><span></span><span></span><span></span>
+          </div>
+          <div class="hero-title-stack reveal d2">
+            <h1>Costruisci il<br>tuo corpo<br><span class="gold">con metodo.</span></h1>
+            <svg class="hero-katana" viewBox="0 0 620 58" fill="none" aria-hidden="true">
+              <path class="katana-blade" d="M142 28C268 24 411 22 562 26C574 26 582 23 590 18C582 28 572 32 559 32C409 35 267 34 142 31Z"/>
+              <path class="katana-edge" d="M151 27C280 25 417 24 559 26"/>
+              <path class="katana-glint" d="M151 27C280 25 417 24 559 26"/>
+              <rect class="katana-guard" x="124" y="16" width="10" height="28" rx="3"/>
+              <path class="katana-handle" d="M38 28H125"/>
+              <path class="katana-wrap" d="M50 18L66 38M72 18L88 38M94 18L110 38"/>
+              <circle class="katana-pommel" cx="34" cy="28" r="5"/>
+            </svg>
+          </div>
+        </div>
+
+        <p class="tri reveal d3"><b>Ipertrofia</b><i>·</i><b>Forza</b><i>·</i><b>Definizione</b></p>
+        <p class="lead reveal d3">Il Metodo ZAC unisce bodybuilding, progressione e controllo tecnico: non una scheda casuale, ma un sistema per costruire massa, linee e consapevolezza.</p>
+
+        <div class="hero-cta reveal d4">
+          <a href="metodo.html" class="btn btn-primary">Scopri il metodo <span class="arr">→</span></a>
+          <a href="#chi-sono" class="btn btn-ghost">Chi è ZAC</a>
+        </div>
+
+        <div class="hero-meta reveal d5">
+          <span>5 fasi</span> · <span>bodybuilding</span> · <span>zero scorciatoie</span>
         </div>
       </div>
     </div>
@@ -161,7 +167,7 @@
       <div class="fasi-head">
         <div class="fhead reveal">
           <p class="eyebrow">Il Metodo</p>
-          <h2>Un percorso<br><span class="gold">in 5 fasi.</span></h2>
+          <h2><span class="nowrap">Un percorso</span><br><span class="gold">in 5 fasi.</span></h2>
           <a href="metodo.html" class="link-more">Scopri le fasi <span class="arr">→</span></a>
         </div>
 
@@ -261,9 +267,9 @@
           <div><h4>Per tutti</h4><p>Adatto a ogni livello, dalle basi al dominio.</p></div>
         </div>
         <div class="feat-cta reveal d4">
-          <h4>Scopri il metodo</h4>
+          <h4>Il percorso completo</h4>
           <p>Cinque fasi, un percorso strutturato dalle basi al dominio.</p>
-          <a href="metodo.html" class="btn btn-onlight">Scopri le fasi <span class="arr">→</span></a>
+          <a href="metodo.html" class="link-more link-more--dark">Scopri il metodo <span class="arr">→</span></a>
         </div>
       </div>
     </div>
@@ -277,13 +283,10 @@
         <div class="about reveal d1">
           <p class="eyebrow">Chi sono</p>
           <h2>Allenare non è dare schede.<br>È costruire <span class="gold">un metodo.</span></h2>
-          <p>Sono Luigi Zaccone, personal trainer e atleta, creatore del Metodo ZAC. Dopo anni in palestra e sul palco di gara ho capito che i risultati veri non arrivano dall'allenamento più duro, ma da quello più <b style="color:var(--ivory)">strutturato</b>: principi chiari, progressione misurata, costanza.</p>
-          <p>Il Metodo ZAC nasce da qui: un percorso in 5 fasi che porta chiunque, dalle basi al dominio, con disciplina e consapevolezza.</p>
-          <ul class="creds">
-            <li><span class="k">Approccio</span><span class="v">Forza, ipertrofia e controllo del movimento</span></li>
-            <li><span class="k">Metodo</span><span class="v">5 fasi progressive · check ogni 6 settimane</span></li>
-            <li><span class="k">Per chi</span><span class="v">Principianti e avanzati che vogliono un sistema, non schede a caso</span></li>
-          </ul>
+          <p>Credo che un fisico non si costruisca per caso. Si costruisce con metodo.</p>
+          <p>Mi chiamo Luigi Zaccone, sono personal trainer e atleta di bodybuilding. Negli anni ho trasformato la mia passione per l'allenamento in un lavoro, affiancando ogni giorno persone con obiettivi, esperienze e punti di partenza diversi.</p>
+          <p>Quello che mi guida è semplice: aiutare ogni persona a migliorare attraverso un percorso costruito con logica, costanza e attenzione ai dettagli.</p>
+          <p>Per me allenare significa educare, accompagnare e far crescere il cliente, non limitarmi a consegnare una scheda.</p>
         </div>
       </div>
     </div>
@@ -373,6 +376,25 @@
     document.querySelectorAll('.nav-links a').forEach(a=>a.addEventListener('click',()=>nav.classList.remove('open')));
 
     document.getElementById('year').textContent=new Date().getFullYear();
+
+    // parallax montagne al mouse
+    const titleWrap=document.querySelector('.hero-title-wrap');
+    if(titleWrap && !matchMedia('(prefers-reduced-motion:reduce)').matches && matchMedia('(pointer:fine)').matches){
+      const hero=titleWrap.closest('.hero')||document.body;
+      let raf;
+      hero.addEventListener('mousemove',e=>{
+        if(raf)return;
+        raf=requestAnimationFrame(()=>{
+          const r=hero.getBoundingClientRect();
+          const dx=((e.clientX-r.left)/r.width-.5);
+          const dy=((e.clientY-r.top)/r.height-.5);
+          titleWrap.style.setProperty('--mx',(dx*22).toFixed(1)+'px');
+          titleWrap.style.setProperty('--my',(dy*14).toFixed(1)+'px');
+          raf=null;
+        });
+      });
+      hero.addEventListener('mouseleave',()=>{titleWrap.style.setProperty('--mx','0px');titleWrap.style.setProperty('--my','0px');});
+    }
   </script>
 </body>
 </html>
