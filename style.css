@@ -457,6 +457,8 @@
       line-height:1.78;
       color:#C8D3E2;
     }
+    .lead-accent{display:block;margin-top:14px;color:var(--ivory);}
+    .lead-accent b{color:var(--gold-bright);font-weight:600;font-style:normal;}
     .hero-center .hero-cta{justify-content:center;}
     .hero-center .hero-meta{justify-content:center;margin-top:38px;}
     @media(prefers-reduced-motion:reduce){
