@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0A1326" />
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <title>Questionario — Metodo ZAC</title>
+  <meta name="description" content="Rispondi al questionario del Metodo ZAC e sblocca il programma gratuito di 6 mesi." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500;1,9..144,600&family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css?v=hero-circle-2" />
+  <style>
+    .quiz-page{min-height:100vh;display:flex;flex-direction:column;background:radial-gradient(120% 100% at 80% 0%,#163055 0%,var(--ink-2) 46%,#070F1C 100%);}
+    .quiz-nav{position:static;padding:22px 0;background:none;}
+    .quiz-nav .wrap{display:flex;align-items:center;justify-content:space-between;}
+    .quiz-nav .back{font-family:'Oswald',sans-serif;font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);transition:color .3s;}
+    .quiz-nav .back:hover{color:var(--gold-bright);}
+
+    .quiz-main{flex:1;display:flex;align-items:flex-start;justify-content:center;padding:34px 22px 70px;}
+    .quiz-card{width:100%;max-width:640px;}
+
+    /* barra avanzamento */
+    .quiz-progress{display:flex;align-items:center;gap:16px;margin-bottom:34px;}
+    .quiz-progress .track{flex:1;height:3px;background:rgba(230,200,120,.14);border-radius:2px;overflow:hidden;}
+    .quiz-progress .fill{height:100%;width:0;background:linear-gradient(90deg,var(--gold-deep),var(--gold),var(--gold-bright));transition:width .45s var(--ease);}
+    .quiz-progress .count{font-family:'Oswald',sans-serif;font-size:12px;letter-spacing:.2em;color:var(--gold);white-space:nowrap;}
+
+    /* step */
+    .step{display:none;animation:stepIn .45s var(--ease) both;}
+    .step.active{display:block;}
+    @keyframes stepIn{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:none;}}
+    .step .eyebrow{margin-bottom:14px;}
+    .step h2{font-family:'Oswald',sans-serif;font-weight:600;text-transform:uppercase;letter-spacing:.02em;font-size:clamp(24px,4vw,34px);line-height:1.18;margin:0 0 8px;}
+    .step .hint{color:var(--muted);font-size:14.5px;margin:0 0 26px;}
+
+    /* opzioni scelta multipla */
+    .opts{display:grid;gap:10px;}
+    .opt{display:flex;align-items:center;gap:14px;padding:15px 18px;border:1px solid rgba(230,200,120,.16);border-radius:10px;background:rgba(15,30,56,.55);cursor:pointer;transition:border-color .25s,background .25s,transform .25s;font-size:15.5px;color:var(--text);}
+    .opt:hover{border-color:rgba(230,200,120,.45);transform:translateX(3px);}
+    .opt .dot{width:18px;height:18px;border-radius:50%;border:2px solid rgba(230,200,120,.4);flex:none;display:grid;place-items:center;transition:border-color .25s;}
+    .opt .dot::after{content:"";width:8px;height:8px;border-radius:50%;background:var(--gold-bright);transform:scale(0);transition:transform .22s var(--ease);}
+    .opt.selected{border-color:var(--gold);background:rgba(200,162,74,.1);}
+    .opt.selected .dot{border-color:var(--gold-bright);}
+    .opt.selected .dot::after{transform:scale(1);}
+
+    /* campi testo */
+    .fields{display:grid;gap:14px;grid-template-columns:1fr 1fr;}
+    .field{display:flex;flex-direction:column;gap:7px;min-width:0;}
+    .field input,.field select,.field textarea{width:100%;min-width:0;}
+    .field.full{grid-column:1/-1;}
+    .field label{font-family:'Oswald',sans-serif;font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);}
+    .field input,.field select,.field textarea{appearance:none;background:rgba(15,30,56,.6);border:1px solid rgba(230,200,120,.18);border-radius:10px;padding:13px 15px;color:var(--text);font:inherit;font-size:15.5px;transition:border-color .25s;}
+    .field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--gold);}
+    .field textarea{min-height:120px;resize:vertical;}
+    .field select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23C8A24A' stroke-width='2' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 15px center;}
+    .field .err{display:none;color:#E08A8A;font-size:13px;}
+    .field.invalid input,.field.invalid select,.field.invalid textarea{border-color:rgba(214,69,69,.6);}
+    .field.invalid .err{display:block;}
+
+    /* scala 1-10 */
+    .scale{display:grid;grid-template-columns:repeat(10,1fr);gap:8px;}
+    .scale button{aspect-ratio:1;border:1px solid rgba(230,200,120,.18);border-radius:9px;background:rgba(15,30,56,.55);color:var(--text);font-family:'Oswald',sans-serif;font-size:16px;cursor:pointer;transition:all .22s;}
+    .scale button:hover{border-color:rgba(230,200,120,.5);}
+    .scale button.selected{background:var(--gold);border-color:var(--gold);color:#15100a;font-weight:600;}
+    .scale-labels{display:flex;justify-content:space-between;margin-top:10px;color:var(--muted);font-size:12.5px;}
+
+    /* controlli */
+    .quiz-ctrl{display:flex;justify-content:space-between;align-items:center;margin-top:34px;}
+    .btn-back{background:none;border:0;color:var(--muted);font:inherit;font-size:14px;cursor:pointer;padding:10px 0;letter-spacing:.04em;transition:color .25s;}
+    .btn-back:hover{color:var(--gold-bright);}
+    .btn-back[disabled]{visibility:hidden;}
+    .quiz-ctrl .btn-primary{border:0;cursor:pointer;font:inherit;}
+    .quiz-ctrl .btn-primary[disabled]{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none;}
+
+    /* schermata finale */
+    .done{text-align:center;padding:20px 0;}
+    .done .ring{width:92px;height:92px;margin:0 auto 26px;border-radius:50%;border:2px solid var(--gold);display:grid;place-items:center;animation:stepIn .6s var(--ease) both;}
+    .done .ring svg{width:38px;height:38px;}
+    .done h2{font-size:clamp(28px,4.5vw,40px);}
+    .done .lead-txt{color:var(--muted);font-size:16px;line-height:1.75;max-width:480px;margin:18px auto 30px;}
+    .done .lead-txt em{font-family:'Fraunces',Georgia,serif;font-style:italic;color:var(--gold-bright);}
+    .done .btn-primary{font-size:15px;}
+    .done .small{margin-top:18px;color:var(--muted);font-size:13px;}
+    .sending{opacity:.6;pointer-events:none;}
+
+    /* ─ mobile ─ */
+    @media(max-width:560px){
+      .quiz-nav{padding:16px 0;}
+      .quiz-nav .back{font-size:11px;letter-spacing:.16em;}
+      .quiz-main{padding:26px 18px 56px;}
+      .quiz-progress{margin-bottom:28px;}
+      .step h2{font-size:26px;}
+      .fields{grid-template-columns:1fr;}
+      .opt{padding:14px 15px;font-size:15px;}
+      .opt:hover{transform:none;}
+      .scale{grid-template-columns:repeat(5,1fr);}
+      .scale button{font-size:17px;}
+      .quiz-ctrl{margin-top:30px;gap:14px;}
+      .quiz-ctrl .btn-primary{flex:1;justify-content:center;text-align:center;}
+      .quiz-ctrl .btn-back[disabled]{display:none;}
+    }
+  </style>
+</head>
+<body class="quiz-page">
+
+  <nav class="quiz-nav">
+    <div class="wrap">
+      <a class="brand" href="index.html">
+        <span class="mark">
+          <svg class="z-mark" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+            <path class="z-back" d="M16 17 H48 L16 47 H48" stroke="#9C7B30" stroke-width="8.5" stroke-linejoin="miter" stroke-linecap="square"/>
+            <path class="z-front" d="M16 17 H48 L16 47 H48" stroke="#E6C878" stroke-width="8.5" stroke-linejoin="miter" stroke-linecap="square" pathLength="1"/>
+          </svg>
+        </span>
+        <span class="bt"><span class="b1">METODO <b>ZAC</b></span><span class="b2">QUESTIONARIO</span></span>
+      </a>
+      <a class="back" href="index.html">← Torna al sito</a>
+    </div>
+  </nav>
+
+  <main class="quiz-main">
+    <div class="quiz-card">
+
+      <div class="quiz-progress" id="progress">
+        <div class="track"><div class="fill" id="progressFill"></div></div>
+        <span class="count" id="progressCount"></span>
+      </div>
+
+      <!-- STEP 0 · dati base -->
+      <section class="step" data-step="0">
+        <span class="eyebrow">Dati base</span>
+        <h2>Iniziamo da te.</h2>
+        <p class="hint">Servono per prepararti il programma e inviarti i consigli del Metodo ZAC.</p>
+        <div class="fields">
+          <div class="field"><label for="f-nome">Nome</label><input id="f-nome" type="text" autocomplete="given-name" /><span class="err">Inserisci il nome</span></div>
+          <div class="field"><label for="f-cognome">Cognome</label><input id="f-cognome" type="text" autocomplete="family-name" /><span class="err">Inserisci il cognome</span></div>
+          <div class="field full"><label for="f-email">Email</label><input id="f-email" type="email" autocomplete="email" placeholder="nome@esempio.it" /><span class="err">Inserisci un'email valida</span></div>
+          <div class="field"><label for="f-eta">Età</label><input id="f-eta" type="number" min="14" max="99" inputmode="numeric" /><span class="err">Inserisci l'età (14–99)</span></div>
+          <div class="field"><label for="f-sesso">Sesso</label>
+            <select id="f-sesso"><option value="" selected disabled>Seleziona</option><option>Uomo</option><option>Donna</option><option>Preferisco non dirlo</option></select>
+            <span class="err">Seleziona un'opzione</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- gli step delle domande vengono generati da JS -->
+      <div id="questionSteps"></div>
+
+      <!-- STEP finale · risposte aperte -->
+      <section class="step" data-step="open1">
+        <span class="eyebrow">Domanda chiave</span>
+        <h2>Se potessi migliorare una sola cosa del tuo fisico nei prossimi 6 mesi, quale sarebbe?</h2>
+        <div class="fields"><div class="field full"><label for="f-chiave">La tua risposta</label><textarea id="f-chiave"></textarea><span class="err">Scrivi una risposta</span></div></div>
+      </section>
+
+      <section class="step" data-step="open2">
+        <span class="eyebrow">La domanda più importante di tutte</span>
+        <h2>Perché vuoi raggiungere questo obiettivo?</h2>
+        <div class="fields"><div class="field full"><label for="f-perche">La tua risposta</label><textarea id="f-perche"></textarea><span class="err">Scrivi una risposta</span></div></div>
+      </section>
+
+      <!-- SUCCESSO -->
+      <section class="step" data-step="done">
+        <div class="done">
+          <div class="ring" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M4 12.5l5 5L20 6.5" stroke="#E6C878" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <span class="eyebrow center" style="justify-content:center">Benvenuto nel Metodo ZAC</span>
+          <h2>Le tue risposte sono<br>state <span class="gold">registrate.</span></h2>
+          <p class="lead-txt">Da oggi inizi il tuo percorso con il <em>Programma Gratuito di 6 mesi</em>.
+            Questo programma è un'introduzione alla filosofia del Metodo ZAC:
+            disciplina, struttura, progressione e consapevolezza.</p>
+          <a class="btn btn-primary" id="downloadBtn" href="#" download>Scarica il Programma Gratuito <span class="arr">↓</span></a>
+          <p class="small">Se in futuro vorrai un percorso costruito sulle tue esigenze,<br>potrai accedere al coaching personalizzato con Luigi.</p>
+        </div>
+      </section>
+
+      <div class="quiz-ctrl" id="ctrl">
+        <button class="btn-back" id="btnBack">← Indietro</button>
+        <button class="btn btn-primary" id="btnNext">Avanti <span class="arr">→</span></button>
+      </div>
+
+    </div>
+  </main>
+
+<script>
+/* ============================================================
+   QUESTIONARIO METODO ZAC
+   Punteggio su 100 → 0-39 Principiante · 40-69 Intermedio · 70-100 Avanzato
+   ============================================================ */
+
+const QUESTIONS = [
+  { id:'obiettivo', eyebrow:'Obiettivo principale', title:'Qual è il tuo obiettivo principale?',
+    opts:[['Perdere grasso'],['Aumentare massa muscolare'],['Ricomposizione corporea'],['Migliorare la forma fisica generale'],['Preparazione specifica']] },
+  { id:'esperienza', eyebrow:'Esperienza', title:'Da quanto tempo ti alleni con costanza?',
+    opts:[['Mai',0],['Meno di 6 mesi',5],['6 mesi - 2 anni',10],['2 - 5 anni',15],['Più di 5 anni',20]] },
+  { id:'frequenza', eyebrow:'Frequenza', title:'Quante volte ti alleni attualmente?', hint:'A settimana.',
+    opts:[['0',0],['1-2',5],['3-4',12],['5+',15]] },
+  { id:'alimentazione', eyebrow:'Alimentazione', title:'Segui attualmente un’alimentazione strutturata?',
+    opts:[['No',0],['Più o meno',5],['Sì',10]] },
+  { id:'disciplina', eyebrow:'Disciplina', title:'Quanto riesci a rispettare il tuo programma?', scale:true,
+    hint:'1 = per niente · 10 = sempre' },
+  { id:'costanza', eyebrow:'Costanza', title:'Negli ultimi 6 mesi quante volte hai abbandonato un percorso?',
+    opts:[['Mai',10],['1 volta',7],['2-3 volte',3],['Più di 3 volte',0]] },
+  { id:'consapevolezza', eyebrow:'Consapevolezza', title:'Quando ti alleni senti davvero lavorare il muscolo target?',
+    opts:[['Quasi mai',0],['A volte',5],['Spesso',10],['Sempre',15]] },
+  { id:'tecnica', eyebrow:'Tecnica', title:'Come valuti la tua esecuzione degli esercizi?',
+    opts:[['Scarsa',0],['Sufficiente',5],['Buona',10],['Ottima',15]] },
+  { id:'ostacolo', eyebrow:'Ostacolo principale', title:'Qual è la difficoltà più grande che ti impedisce di ottenere risultati?',
+    opts:[['Mancanza di costanza'],['Alimentazione'],['Motivazione'],['Tempo'],['Programmazione'],['Recupero'],['Altro']] },
+];
+
+const answers = {};   // id → {label, points}
+
+/* ---- genera gli step delle domande ---- */
+const stepsHost = document.getElementById('questionSteps');
+QUESTIONS.forEach(q=>{
+  const s = document.createElement('section');
+  s.className = 'step'; s.dataset.step = q.id;
+  let body;
+  if(q.scale){
+    body = `<div class="scale" role="radiogroup">`+
+      Array.from({length:10},(_,i)=>`<button type="button" data-val="${i+1}">${i+1}</button>`).join('')+
+      `</div><div class="scale-labels"><span>Per niente</span><span>Sempre</span></div>`;
+  }else{
+    body = `<div class="opts" role="radiogroup">`+
+      q.opts.map((o,i)=>`<button type="button" class="opt" data-i="${i}"><span class="dot"></span>${o[0]}</button>`).join('')+
+      `</div>`;
+  }
+  s.innerHTML = `<span class="eyebrow">${q.eyebrow}</span><h2>${q.title}</h2>`+
+                (q.hint?`<p class="hint">${q.hint}</p>`:'<p class="hint"></p>')+body;
+  stepsHost.appendChild(s);
+
+  s.querySelectorAll('.opt').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      s.querySelectorAll('.opt').forEach(b=>b.classList.remove('selected'));
+      btn.classList.add('selected');
+      const o = q.opts[+btn.dataset.i];
+      answers[q.id] = { label:o[0], points:o.length>1?o[1]:null };
+      setTimeout(next, 260);           // avanza da solo dopo la scelta
+    });
+  });
+  s.querySelectorAll('.scale button').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      s.querySelectorAll('.scale button').forEach(b=>b.classList.remove('selected'));
+      btn.classList.add('selected');
+      const v = +btn.dataset.val;
+      answers[q.id] = { label:String(v), points:Math.round(v/10*15) }; // scala → max 15 punti
+      setTimeout(next, 260);
+    });
+  });
+});
+
+/* ---- navigazione ---- */
+const steps = [...document.querySelectorAll('.step')];
+const order = steps.map(s=>s.dataset.step);
+const fill = document.getElementById('progressFill');
+const count = document.getElementById('progressCount');
+const ctrl = document.getElementById('ctrl');
+const btnBack = document.getElementById('btnBack');
+const btnNext = document.getElementById('btnNext');
+let cur = 0;
+
+function show(i){
+  cur = i;
+  steps.forEach((s,k)=>s.classList.toggle('active', k===i));
+  const total = steps.length-1;          // lo step "done" non conta
+  const isDone = order[i]==='done';
+  document.getElementById('progress').style.visibility = isDone?'hidden':'visible';
+  ctrl.style.display = isDone?'none':'flex';
+  fill.style.width = (i/total*100)+'%';
+  count.textContent = Math.min(i+1,total)+' / '+total;
+  btnBack.disabled = i===0;
+  const q = QUESTIONS.find(q=>q.id===order[i]);
+  btnNext.textContent = (order[i]==='open2') ? 'Sblocca il programma' : 'Avanti →';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function validate(){
+  const id = order[cur];
+  const bad = f => { f.classList.add('invalid'); f.querySelector('input,select,textarea').focus(); return false; };
+  const ok  = f => { f.classList.remove('invalid'); return true; };
+  if(id==='0'){
+    let good = true;
+    const req = [['f-nome',v=>v.trim()],[ 'f-cognome',v=>v.trim()],
+      ['f-email',v=>/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)],
+      ['f-eta',v=>+v>=14&&+v<=99],['f-sesso',v=>v]];
+    for(const [fid,test] of req){
+      const el = document.getElementById(fid), f = el.closest('.field');
+      if(!test(el.value)){ if(good) bad(f); else f.classList.add('invalid'); good=false; } else ok(f);
+    }
+    return good;
+  }
+  if(id==='open1'||id==='open2'){
+    const el = document.getElementById(id==='open1'?'f-chiave':'f-perche');
+    return el.value.trim() ? ok(el.closest('.field')) : bad(el.closest('.field'));
+  }
+  return !!answers[id];   // domande a scelta: serve una risposta
+}
+
+function next(){
+  if(!validate()) return;
+  if(order[cur+1]==='done'){ submit(); return; }
+  show(cur+1);
+}
+btnNext.addEventListener('click', next);
+btnBack.addEventListener('click', ()=>cur>0&&show(cur-1));
+
+/* ---- punteggio e livello ---- */
+function computeScore(){
+  return ['esperienza','frequenza','alimentazione','disciplina','costanza','consapevolezza','tecnica']
+    .reduce((t,id)=>t+(answers[id]?.points||0), 0);
+}
+function levelFor(score){
+  return score>=70 ? 'Avanzato' : score>=40 ? 'Intermedio' : 'Principiante';
+}
+
+/* ---- invio ----------------------------------------------------
+   Per ora il lead viene solo composto e loggato.
+   PASSO 2: insert su Supabase (tabella leads).
+   PASSO 3: iscrizione contatto su Brevo con attributo LIVELLO
+            → parte l'automazione email a 3 giorni per livello.
+----------------------------------------------------------------- */
+async function submit(){
+  const score = computeScore();
+  const lead = {
+    nome: document.getElementById('f-nome').value.trim(),
+    cognome: document.getElementById('f-cognome').value.trim(),
+    email: document.getElementById('f-email').value.trim().toLowerCase(),
+    eta: +document.getElementById('f-eta').value,
+    sesso: document.getElementById('f-sesso').value,
+    ...Object.fromEntries(Object.entries(answers).map(([k,v])=>[k,v.label])),
+    domanda_chiave: document.getElementById('f-chiave').value.trim(),
+    perche: document.getElementById('f-perche').value.trim(),
+    punteggio: score,
+    livello: levelFor(score),
+  };
+
+  document.querySelector('.quiz-card').classList.add('sending');
+  try{
+    // TODO passo 2/3: await salvaSuSupabase(lead); await iscriviSuBrevo(lead);
+    console.log('LEAD PRONTO:', lead);
+    await new Promise(r=>setTimeout(r,600));   // simulazione rete
+  }finally{
+    document.querySelector('.quiz-card').classList.remove('sending');
+  }
+  show(order.indexOf('done'));
+}
+
+show(0);
+</script>
+</body>
+</html>
