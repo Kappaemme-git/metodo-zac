@@ -1,3 +1,4 @@
 _*.html
 .DS_Store
 *.log
+.shots/

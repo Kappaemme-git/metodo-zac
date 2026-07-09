@@ -526,12 +526,79 @@
     .pcard .belt .belt-svg{width:116px;height:auto;display:block;filter:drop-shadow(0 7px 9px rgba(0,0,0,.45));}
     .pcard p{font-size:13px;color:#9fb0c6;line-height:1.55;text-wrap:balance;margin-top:0;}
     .phase-arrows{display:none;}
+
+    /* ---------- LINEA DI PROGRESSO (tu sei qui) ---------- */
+    /* il row-gap di .fasi-head è 48px: il margine negativo avvicina la track alle card */
+    .phase-track{grid-column:2;position:relative;margin-top:-18px;display:grid;grid-template-columns:repeat(5,1fr);}
+    /* linea di base sottile: unisce i centri del primo e dell'ultimo pallino
+       (colonne da 20% → centri a 10% e 90%); i pallini hanno 22px → centro a 11px */
+    .phase-track::before{content:"";position:absolute;top:11px;left:10%;right:10%;height:1px;
+      background:var(--line-soft);}
+    /* tratto "completato": parte in oro dal primo pallino e sfuma lungo il percorso */
+    .phase-track::after{content:"";position:absolute;top:10px;left:10%;width:26%;height:2px;
+      background:linear-gradient(90deg,var(--gold-bright),rgba(200,162,74,0));}
+    .pt-step{position:relative;display:flex;flex-direction:column;align-items:center;}
+    /* tratto verticale che collega il fondo di ogni card al suo pallino */
+    .pt-step::before{content:"";position:absolute;left:50%;top:-30px;width:1px;height:30px;
+      background:linear-gradient(180deg,rgba(255,255,255,.16),rgba(255,255,255,.04));}
+    /* pallino = mini-cintura: pieno del colore della fase, numerale romano dentro */
+    .pt-dot{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;
+      font-family:'Oswald',sans-serif;font-weight:600;font-size:9.5px;line-height:1;letter-spacing:.04em;
+      background:var(--pc,#22304A);color:var(--pn,var(--ivory));border:1px solid rgba(255,255,255,.16);
+      position:relative;z-index:1;box-shadow:0 4px 10px rgba(0,0,0,.35);}
+    .pt-step:nth-child(1) .pt-dot{--pn:#10203A;}
+    .pt-step:nth-child(2) .pt-dot{--pn:#15100a;}
+    .pt-step:nth-child(5) .pt-dot{--pn:var(--gold);} /* cintura nera con numerale oro, come i gradi dan */
+    .pt-step.active .pt-dot{border-color:var(--gold-bright);
+      box-shadow:0 0 0 4px rgba(230,200,120,.14),0 0 16px rgba(230,200,120,.4);}
+    .pt-you{margin-top:10px;display:flex;flex-direction:column;align-items:center;gap:1px;
+      font-family:'Oswald',sans-serif;font-weight:600;font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold-bright);white-space:nowrap;}
+    .pt-arr{color:var(--gold-bright);font-size:12px;letter-spacing:0;line-height:1;}
     @media(max-width:1040px){
       .fasi-head{grid-template-columns:1fr;gap:24px;}
       .fhead p{max-width:none;}
       .phase-cards{grid-template-columns:repeat(2,1fr);}
+      .phase-track{grid-column:1;max-width:420px;margin:30px auto 0;width:100%;}
+      /* le card sono su più righe: i tratti verticali non hanno più una card da collegare */
+      .pt-step::before{display:none;}
     }
-    @media(max-width:560px){.phase-cards{grid-template-columns:1fr;max-width:360px;margin:0 auto;}}
+    @media(max-width:560px){
+      .phase-cards{grid-template-columns:1fr;max-width:360px;margin:0 auto;}
+      .phase-track{max-width:300px;}
+    }
+
+    /* ---------- SAI SEMPRE DOVE SEI (anteprima app) ---------- */
+    .dove-sei{padding:110px 0 120px;background:linear-gradient(180deg,#0B1830,var(--ink));border-top:1px solid var(--line-soft);}
+    .ds-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:72px;align-items:center;max-width:1060px;margin:0 auto;}
+    .ds-text h2{font-size:clamp(34px,4vw,48px);margin:18px 0 22px;line-height:1.02;}
+    .ds-lead{color:#C9D4E2;font-size:16px;line-height:1.8;max-width:400px;margin-bottom:28px;text-wrap:pretty;}
+    .ds-list{list-style:none;}
+    .ds-list li{display:flex;align-items:baseline;gap:14px;padding:11px 0;border-top:1px solid var(--line-soft);color:var(--text);font-size:15px;}
+    .ds-list li:last-child{border-bottom:1px solid var(--line-soft);}
+    .ds-list li::before{content:"✓";color:var(--gold-bright);font-weight:700;font-size:14px;}
+    /* card fase attuale */
+    .ds-card{position:relative;background:linear-gradient(180deg,#10213C,#0C1A30);border:1px solid var(--line);border-radius:10px;padding:34px 34px 30px;
+      box-shadow:0 30px 60px -30px rgba(0,0,0,.7);}
+    .ds-badge{position:absolute;top:-17px;right:24px;font-size:10.5px;padding:7px 14px;margin:0;background:#0E1D36;}
+    .ds-row{display:flex;align-items:center;justify-content:space-between;gap:20px;}
+    .ds-label{font-family:'Oswald',sans-serif;font-weight:600;letter-spacing:.22em;font-size:11px;color:var(--gold);text-transform:uppercase;}
+    .ds-fase{font-family:'Oswald',sans-serif;font-weight:700;font-size:44px;letter-spacing:.02em;color:var(--ivory);text-transform:uppercase;line-height:1.1;margin-top:8px;}
+    .ds-sub{font-family:'Oswald',sans-serif;font-weight:600;letter-spacing:.14em;font-size:12.5px;color:#9fb0c6;text-transform:uppercase;margin-top:4px;}
+    .ds-belt{width:120px;height:auto;flex:none;filter:drop-shadow(0 7px 9px rgba(0,0,0,.45));}
+    .ds-progress{margin-top:26px;padding-top:22px;border-top:1px solid var(--line-soft);}
+    .ds-plabel{display:flex;justify-content:space-between;align-items:baseline;font-family:'Oswald',sans-serif;font-weight:600;letter-spacing:.18em;font-size:11px;color:var(--gold);text-transform:uppercase;margin-bottom:12px;}
+    .ds-plabel b{font-size:16px;letter-spacing:.04em;color:var(--ivory);}
+    .ds-bar{height:8px;border-radius:999px;background:rgba(255,255,255,.07);overflow:hidden;}
+    .ds-bar i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--gold),var(--gold-bright));
+      box-shadow:0 0 14px rgba(230,200,120,.4);}
+    .ds-next{margin-top:26px;padding-top:22px;border-top:1px solid var(--line-soft);display:flex;align-items:center;justify-content:space-between;gap:20px;}
+    .ds-next p{color:var(--ivory);font-size:15px;line-height:1.5;margin-top:10px;}
+    .ds-belt--next{width:88px;opacity:.9;}
+    @media(max-width:900px){
+      .ds-grid{grid-template-columns:1fr;gap:48px;}
+      .ds-card{max-width:480px;}
+      .ds-fase{font-size:38px;}
+    }
 
     /* ---------- FEATURES BAND ---------- */
     .features{display:grid;grid-template-columns:repeat(4,1fr) 1.5fr;gap:0;padding:60px 0;align-items:center;}
