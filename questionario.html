@@ -84,6 +84,19 @@
     .done .btn-primary{font-size:15px;}
     .done .small{margin-top:18px;color:var(--muted);font-size:13px;}
     .sending{opacity:.6;pointer-events:none;}
+    .legal-consents{grid-column:1/-1;margin-top:8px;padding-top:16px;border-top:1px solid rgba(230,200,120,.14);display:grid;gap:10px;}
+    .legal-check{display:flex;align-items:flex-start;gap:10px;color:var(--text);font-size:12.5px;line-height:1.55;cursor:pointer;}
+    .legal-check input{appearance:none;width:17px!important;height:17px;min-width:17px!important;padding:0!important;margin-top:1px;border:1px solid rgba(230,200,120,.42)!important;border-radius:3px!important;background:rgba(255,255,255,.03)!important;}
+    .legal-check input:checked{background:var(--gold)!important;box-shadow:inset 0 0 0 3px #10213c;}
+    .legal-check.invalid{color:#F0A4A4;}
+    .legal-check a{color:var(--gold-bright);}
+    .legal-check.optional{color:var(--muted);}
+    .submit-error{display:none;margin:20px 0 0;padding:12px 14px;border:1px solid rgba(214,69,69,.38);border-radius:8px;background:rgba(214,69,69,.08);color:#F0A4A4;font-size:13.5px;line-height:1.5;}
+    .submit-error.show{display:block;}
+    .result-profile{max-width:500px;margin:24px auto 28px;padding:22px;border:1px solid var(--line);border-radius:12px;background:rgba(200,162,74,.07);}
+    .result-profile .score{font-family:'Oswald',sans-serif;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);}
+    .result-profile h3{font-size:24px;margin:8px 0 8px;}
+    .result-profile p{margin:0;color:var(--text);font-size:14px;line-height:1.65;}
 
     /* ─ mobile ─ */
     @media(max-width:560px){
@@ -137,10 +150,14 @@
           <div class="field"><label for="f-nome">Nome</label><input id="f-nome" type="text" autocomplete="given-name" /><span class="err">Inserisci il nome</span></div>
           <div class="field"><label for="f-cognome">Cognome</label><input id="f-cognome" type="text" autocomplete="family-name" /><span class="err">Inserisci il cognome</span></div>
           <div class="field full"><label for="f-email">Email</label><input id="f-email" type="email" autocomplete="email" placeholder="nome@esempio.it" /><span class="err">Inserisci un'email valida</span></div>
-          <div class="field"><label for="f-eta">Età</label><input id="f-eta" type="number" min="14" max="99" inputmode="numeric" /><span class="err">Inserisci l'età (14–99)</span></div>
+          <div class="field"><label for="f-eta">Età</label><input id="f-eta" type="number" min="18" max="99" inputmode="numeric" /><span class="err">Il questionario è disponibile dai 18 anni</span></div>
           <div class="field"><label for="f-sesso">Sesso</label>
             <select id="f-sesso"><option value="" selected disabled>Seleziona</option><option>Uomo</option><option>Donna</option><option>Preferisco non dirlo</option></select>
             <span class="err">Seleziona un'opzione</span>
+          </div>
+          <div class="legal-consents">
+            <label class="legal-check"><input id="f-privacy" type="checkbox" /> <span>Ho letto l’<a href="privacy.html" target="_blank">informativa privacy</a> e acconsento al trattamento necessario per elaborare il profilo e consegnare il programma.</span></label>
+            <label class="legal-check optional"><input id="f-marketing" type="checkbox" /> <span>Voglio ricevere anche consigli e aggiornamenti del Metodo ZAC. Facoltativo e revocabile.</span></label>
           </div>
         </div>
       </section>
@@ -168,10 +185,13 @@
             <svg viewBox="0 0 24 24" fill="none"><path d="M4 12.5l5 5L20 6.5" stroke="#E6C878" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </div>
           <span class="eyebrow center" style="justify-content:center">Benvenuto nel Metodo ZAC</span>
-          <h2>Le tue risposte sono<br>state <span class="gold">registrate.</span></h2>
-          <p class="lead-txt">Da oggi inizi il tuo percorso con il <em>Programma Gratuito di 6 mesi</em>.
-            Questo programma è un'introduzione alla filosofia del Metodo ZAC:
-            disciplina, struttura, progressione e consapevolezza.</p>
+          <h2>Il tuo profilo è<br><span class="gold" id="resultLevel">pronto.</span></h2>
+          <div class="result-profile">
+            <span class="score" id="resultScore"></span>
+            <h3 id="resultTitle"></h3>
+            <p id="resultMessage"></p>
+          </div>
+          <p class="lead-txt" id="deliveryMessage">Le risposte sono state registrate.</p>
           <a class="btn btn-primary" id="downloadBtn" href="#" download>Scarica il Programma Gratuito <span class="arr">↓</span></a>
           <p class="small">Se in futuro vorrai un percorso costruito sulle tue esigenze,<br>potrai accedere al coaching personalizzato con Luigi.</p>
         </div>
@@ -181,6 +201,7 @@
         <button class="btn-back" id="btnBack">← Indietro</button>
         <button class="btn btn-primary" id="btnNext">Avanti <span class="arr">→</span></button>
       </div>
+      <p class="submit-error" id="submitError" role="alert"></p>
 
     </div>
   </main>
@@ -213,6 +234,16 @@ const QUESTIONS = [
 ];
 
 const answers = {};   // id → {label, points}
+const startedAt = Date.now();
+const QUESTIONNAIRE_VERSION = 'zac-2026-08-v1';
+const PRIVACY_VERSION = 'privacy-2026-07-v1';
+const idempotencyKey = (()=>{
+  const key='zac-questionnaire-idempotency';
+  let value=sessionStorage.getItem(key);
+  if(!value){value=crypto.randomUUID();sessionStorage.setItem(key,value);}
+  return value;
+})();
+const utm=Object.fromEntries(['source','medium','campaign','content','term'].map(k=>[k,new URLSearchParams(location.search).get('utm_'+k)]).filter(([,v])=>v));
 
 /* ---- genera gli step delle domande ---- */
 const stepsHost = document.getElementById('questionSteps');
@@ -286,9 +317,9 @@ function validate(){
     let good = true;
     const req = [['f-nome',v=>v.trim()],[ 'f-cognome',v=>v.trim()],
       ['f-email',v=>/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)],
-      ['f-eta',v=>+v>=14&&+v<=99],['f-sesso',v=>v]];
+      ['f-eta',v=>+v>=18&&+v<=99],['f-sesso',v=>v],['f-privacy',()=>document.getElementById('f-privacy').checked]];
     for(const [fid,test] of req){
-      const el = document.getElementById(fid), f = el.closest('.field');
+      const el = document.getElementById(fid), f = el.closest('.field,.legal-check');
       if(!test(el.value)){ if(good) bad(f); else f.classList.add('invalid'); good=false; } else ok(f);
     }
     return good;
@@ -308,45 +339,55 @@ function next(){
 btnNext.addEventListener('click', next);
 btnBack.addEventListener('click', ()=>cur>0&&show(cur-1));
 
-/* ---- punteggio e livello ---- */
-function computeScore(){
-  return ['esperienza','frequenza','alimentazione','disciplina','costanza','consapevolezza','tecnica']
-    .reduce((t,id)=>t+(answers[id]?.points||0), 0);
-}
-function levelFor(score){
-  return score>=70 ? 'Avanzato' : score>=40 ? 'Intermedio' : 'Principiante';
-}
-
-/* ---- invio ----------------------------------------------------
-   Per ora il lead viene solo composto e loggato.
-   PASSO 2: insert su Supabase (tabella leads).
-   PASSO 3: iscrizione contatto su Brevo con attributo LIVELLO
-            → parte l'automazione email a 3 giorni per livello.
------------------------------------------------------------------ */
 async function submit(){
-  const score = computeScore();
-  const lead = {
-    nome: document.getElementById('f-nome').value.trim(),
-    cognome: document.getElementById('f-cognome').value.trim(),
+  const payload = {
+    idempotencyKey,
+    questionnaireVersion:QUESTIONNAIRE_VERSION,
+    privacyVersion:PRIVACY_VERSION,
+    privacyAccepted:document.getElementById('f-privacy').checked,
+    marketingConsent:document.getElementById('f-marketing').checked,
+    startedAt,
+    firstName: document.getElementById('f-nome').value.trim(),
+    lastName: document.getElementById('f-cognome').value.trim(),
     email: document.getElementById('f-email').value.trim().toLowerCase(),
-    eta: +document.getElementById('f-eta').value,
-    sesso: document.getElementById('f-sesso').value,
-    ...Object.fromEntries(Object.entries(answers).map(([k,v])=>[k,v.label])),
-    domanda_chiave: document.getElementById('f-chiave').value.trim(),
-    perche: document.getElementById('f-perche').value.trim(),
-    punteggio: score,
-    livello: levelFor(score),
+    age: +document.getElementById('f-eta').value,
+    gender: document.getElementById('f-sesso').value,
+    answers:Object.fromEntries(Object.entries(answers).map(([k,v])=>[k,v.label])),
+    improvementGoal: document.getElementById('f-chiave').value.trim(),
+    motivation: document.getElementById('f-perche').value.trim(),
+    source:'questionario',utm,
   };
 
+  const errorBox=document.getElementById('submitError');
+  errorBox.classList.remove('show');errorBox.textContent='';
   document.querySelector('.quiz-card').classList.add('sending');
   try{
-    // TODO passo 2/3: await salvaSuSupabase(lead); await iscriviSuBrevo(lead);
-    console.log('LEAD PRONTO:', lead);
-    await new Promise(r=>setTimeout(r,600));   // simulazione rete
+    const response=await fetch('/api/questionnaire',{
+      method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(payload),
+    });
+    const result=await response.json().catch(()=>({}));
+    if(!response.ok)throw new Error(result.error||'Non riesco a salvare le risposte. Riprova.');
+    document.getElementById('resultLevel').textContent=result.result.level+'.';
+    document.getElementById('resultScore').textContent=`Punteggio ${result.result.score} / 100`;
+    document.getElementById('resultTitle').textContent=result.result.profile.title;
+    document.getElementById('resultMessage').textContent=result.result.profile.message;
+    const download=document.getElementById('downloadBtn');
+    if(result.program.available){
+      download.href=result.program.downloadUrl;
+      download.hidden=false;
+      document.getElementById('deliveryMessage').innerHTML='Il tuo accesso è stato verificato. Il link qui sotto è personale e temporaneo.';
+    }else{
+      download.hidden=true;
+      document.getElementById('deliveryMessage').innerHTML='Il programma non è ancora pubblicato. Il tuo profilo è salvato: riceverai l’avviso quando Luigi lo renderà disponibile.';
+    }
+    sessionStorage.removeItem('zac-questionnaire-idempotency');
+    show(order.indexOf('done'));
+  }catch(error){
+    errorBox.textContent=error.message;
+    errorBox.classList.add('show');
   }finally{
     document.querySelector('.quiz-card').classList.remove('sending');
   }
-  show(order.indexOf('done'));
 }
 
 show(0);
