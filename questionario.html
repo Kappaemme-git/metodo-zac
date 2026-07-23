@@ -149,16 +149,16 @@
         <h2>Iniziamo da te.</h2>
         <p class="hint">Servono per prepararti il programma e inviarti i consigli del Metodo ZAC.</p>
         <div class="fields">
-          <div class="field"><label for="f-nome">Nome</label><input id="f-nome" type="text" autocomplete="given-name" /><span class="err">Inserisci il nome</span></div>
-          <div class="field"><label for="f-cognome">Cognome</label><input id="f-cognome" type="text" autocomplete="family-name" /><span class="err">Inserisci il cognome</span></div>
-          <div class="field full"><label for="f-email">Email</label><input id="f-email" type="email" autocomplete="email" placeholder="nome@esempio.it" /><span class="err">Inserisci un'email valida</span></div>
-          <div class="field"><label for="f-eta">Età</label><input id="f-eta" type="number" min="18" max="99" inputmode="numeric" /><span class="err">Il questionario è disponibile dai 18 anni</span></div>
+          <div class="field"><label for="f-nome">Nome</label><input id="f-nome" type="text" autocomplete="given-name" maxlength="80" required /><span class="err">Inserisci il nome</span></div>
+          <div class="field"><label for="f-cognome">Cognome</label><input id="f-cognome" type="text" autocomplete="family-name" maxlength="80" required /><span class="err">Inserisci il cognome</span></div>
+          <div class="field full"><label for="f-email">Email</label><input id="f-email" type="email" autocomplete="email" placeholder="nome@esempio.it" maxlength="254" required /><span class="err">Inserisci un'email valida</span></div>
+          <div class="field"><label for="f-eta">Età</label><input id="f-eta" type="number" min="18" max="99" inputmode="numeric" required /><span class="err">Il questionario è disponibile dai 18 anni</span></div>
           <div class="field"><label for="f-sesso">Sesso</label>
-            <select id="f-sesso"><option value="" selected disabled>Seleziona</option><option>Uomo</option><option>Donna</option><option>Preferisco non dirlo</option></select>
+            <select id="f-sesso" required><option value="" selected disabled>Seleziona</option><option>Uomo</option><option>Donna</option><option>Preferisco non dirlo</option></select>
             <span class="err">Seleziona un'opzione</span>
           </div>
           <div class="legal-consents">
-            <label class="legal-check"><input id="f-privacy" type="checkbox" /> <span>Ho letto l’<a href="privacy.html" target="_blank">informativa privacy</a> e acconsento al trattamento necessario per elaborare il profilo e consegnare il programma.</span></label>
+            <label class="legal-check"><input id="f-privacy" type="checkbox" required /> <span>Ho letto l’<a href="privacy.html" target="_blank">informativa privacy</a> e acconsento al trattamento necessario per elaborare il profilo e consegnare il programma.</span></label>
             <label class="legal-check optional"><input id="f-marketing" type="checkbox" /> <span>Voglio ricevere anche consigli e aggiornamenti del Metodo ZAC. Facoltativo e revocabile.</span></label>
           </div>
         </div>
@@ -171,13 +171,13 @@
       <section class="step" data-step="open1">
         <span class="eyebrow">Domanda chiave</span>
         <h2>Se potessi migliorare una sola cosa del tuo fisico nei prossimi 6 mesi, quale sarebbe?</h2>
-        <div class="fields"><div class="field full"><label for="f-chiave">La tua risposta</label><textarea id="f-chiave"></textarea><span class="err">Scrivi una risposta</span></div></div>
+        <div class="fields"><div class="field full"><label for="f-chiave">La tua risposta</label><textarea id="f-chiave" minlength="8" maxlength="1200" required></textarea><span class="err">Scrivi almeno 8 caratteri</span></div></div>
       </section>
 
       <section class="step" data-step="open2">
         <span class="eyebrow">La domanda più importante di tutte</span>
         <h2>Perché vuoi raggiungere questo obiettivo?</h2>
-        <div class="fields"><div class="field full"><label for="f-perche">La tua risposta</label><textarea id="f-perche"></textarea><span class="err">Scrivi una risposta</span></div></div>
+        <div class="fields"><div class="field full"><label for="f-perche">La tua risposta</label><textarea id="f-perche" minlength="8" maxlength="1200" required></textarea><span class="err">Scrivi almeno 8 caratteri</span></div></div>
       </section>
 
       <!-- SUCCESSO -->
@@ -325,8 +325,16 @@ function show(i){
 
 function validate(){
   const id = order[cur];
-  const bad = f => { f.classList.add('invalid'); f.querySelector('input,select,textarea').focus(); return false; };
-  const ok  = f => { f.classList.remove('invalid'); return true; };
+  const bad = f => {
+    const control=f.querySelector('input,select,textarea');
+    f.classList.add('invalid');control?.setAttribute('aria-invalid','true');control?.focus();
+    return false;
+  };
+  const ok  = f => {
+    const control=f.querySelector('input,select,textarea');
+    f.classList.remove('invalid');control?.removeAttribute('aria-invalid');
+    return true;
+  };
   if(id==='0'){
     let good = true;
     const req = [['f-nome',v=>v.trim()],[ 'f-cognome',v=>v.trim()],
@@ -340,9 +348,38 @@ function validate(){
   }
   if(id==='open1'||id==='open2'){
     const el = document.getElementById(id==='open1'?'f-chiave':'f-perche');
-    return el.value.trim() ? ok(el.closest('.field')) : bad(el.closest('.field'));
+    const length=el.value.trim().length;
+    return length>=8&&length<=1200 ? ok(el.closest('.field')) : bad(el.closest('.field'));
   }
   return !!answers[id];   // domande a scelta: serve una risposta
+}
+
+const SERVER_FIELD_TARGETS={
+  firstName:'0',lastName:'0',email:'0',age:'0',gender:'0',privacyAccepted:'0',
+  improvementGoal:'open1',motivation:'open2',
+};
+const SERVER_FIELD_CONTROLS={
+  firstName:'f-nome',lastName:'f-cognome',email:'f-email',age:'f-eta',gender:'f-sesso',
+  privacyAccepted:'f-privacy',improvementGoal:'f-chiave',motivation:'f-perche',
+};
+
+function showServerValidation(field,message){
+  const target=SERVER_FIELD_TARGETS[field]||(field?.startsWith('answers.')?field.slice('answers.'.length):null);
+  const targetIndex=order.indexOf(target);
+  if(targetIndex<0)return false;
+  show(targetIndex);
+  const control=document.getElementById(SERVER_FIELD_CONTROLS[field]);
+  if(control){
+    const wrapper=control.closest('.field,.legal-check');
+    const inline=wrapper?.querySelector('.err');
+    if(inline)inline.textContent=message;
+    wrapper?.classList.add('invalid');
+    control.setAttribute('aria-invalid','true');
+    control.focus();
+  }
+  const errorBox=document.getElementById('submitError');
+  errorBox.textContent=message;errorBox.classList.add('show');
+  return true;
 }
 
 function next(){
@@ -380,7 +417,11 @@ async function submit(){
       method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(payload),
     });
     const result=await response.json().catch(()=>({}));
-    if(!response.ok)throw new Error(result.error||'Non riesco a salvare le risposte. Riprova.');
+    if(!response.ok){
+      const requestError=new Error(result.error||'Non riesco a salvare le risposte. Riprova.');
+      requestError.field=result.field||null;
+      throw requestError;
+    }
     document.getElementById('resultLevel').textContent=result.result.level+'.';
     document.getElementById('resultScore').textContent=`Punteggio ${result.result.score} / 100`;
     document.getElementById('resultTitle').textContent=result.result.profile.title;
@@ -397,6 +438,7 @@ async function submit(){
     sessionStorage.removeItem('zac-questionnaire-idempotency');
     show(order.indexOf('done'));
   }catch(error){
+    if(showServerValidation(error.field,error.message))return;
     errorBox.textContent=error.message;
     errorBox.classList.add('show');
   }finally{
