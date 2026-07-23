@@ -598,7 +598,6 @@
     /* card fase attuale */
     .ds-card{position:relative;background:linear-gradient(180deg,#10213C,#0C1A30);border:1px solid var(--line);border-radius:10px;padding:34px 34px 30px;
       box-shadow:0 30px 60px -30px rgba(0,0,0,.7);}
-    .ds-badge{position:absolute;top:-17px;right:24px;font-size:10.5px;padding:7px 14px;margin:0;background:#0E1D36;}
     .ds-row{display:flex;align-items:center;justify-content:space-between;gap:20px;}
     .ds-label{font-family:'Oswald',sans-serif;font-weight:600;letter-spacing:.22em;font-size:11px;color:var(--gold);text-transform:uppercase;}
     .ds-fase{font-family:'Oswald',sans-serif;font-weight:700;font-size:44px;letter-spacing:.02em;color:var(--ivory);text-transform:uppercase;line-height:1.1;margin-top:8px;}
@@ -711,11 +710,6 @@
     #programma{padding:120px 0;background:linear-gradient(180deg,#0B1830,var(--ink));position:relative;overflow:hidden;}
     #programma::before{content:"";position:absolute;inset:0;background:radial-gradient(60% 90% at 50% 0%,rgba(200,162,74,.10),transparent 60%);}
     .prog-card{position:relative;max-width:760px;margin:0 auto;text-align:center;background:linear-gradient(180deg,#10213C,#0C1A30);border:1px solid var(--line);border-radius:10px;padding:56px 48px;}
-    .prog-badge{display:inline-flex;align-items:center;gap:9px;font-family:'Oswald',sans-serif;font-weight:600;letter-spacing:.18em;text-transform:uppercase;font-size:12px;color:var(--gold-bright);
-      border:1px solid var(--line);border-radius:999px;padding:8px 18px;background:rgba(200,162,74,.07);margin-bottom:22px;}
-    .prog-badge::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--gold-bright);box-shadow:0 0 10px var(--gold-bright);animation:pulse 2.4s var(--ease) infinite;}
-    @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.35;}}
-    @media(prefers-reduced-motion:reduce){.prog-badge::before{animation:none;}}
     .prog-card h2{font-size:clamp(30px,4.6vw,52px);margin:16px 0 14px;}
     .prog-card h2 .gold{color:var(--gold-bright);}
     .prog-card p{color:var(--text);font-size:16px;max-width:520px;margin:0 auto 30px;line-height:1.7;}
