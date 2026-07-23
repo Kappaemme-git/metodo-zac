@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex,nofollow" />
+  <meta name="theme-color" content="#08111f" />
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <title>Centro controllo — Metodo ZAC</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,500;1,9..144,500&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="admin.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Vai al contenuto</a>
+
+  <section class="login-screen" id="loginScreen">
+    <div class="login-art" aria-hidden="true"><span>Z</span></div>
+    <form class="login-card" id="loginForm">
+      <div class="login-brand"><span class="brand-mark">Z</span><span><b>METODO ZAC</b><small>Centro controllo</small></span></div>
+      <p class="kicker">Area riservata</p>
+      <h1>Il metodo,<br><em>sotto controllo.</em></h1>
+      <p class="login-copy">Contatti, profili e programma gratuito in un unico spazio privato.</p>
+      <label class="control"><span>Password</span><input id="adminPassword" type="password" autocomplete="current-password" required autofocus /></label>
+      <button class="primary-button" type="submit">Entra nella dashboard <span>→</span></button>
+      <p class="form-message" id="loginMessage" role="alert"></p>
+    </form>
+  </section>
+
+  <div class="admin-shell" id="adminShell" hidden>
+    <aside class="sidebar">
+      <a class="sidebar-brand" href="index.html" aria-label="Torna al sito Metodo ZAC"><span class="brand-mark">Z</span><span><b>METODO ZAC</b><small>Centro controllo</small></span></a>
+      <nav aria-label="Sezioni dashboard">
+        <a class="side-link active" href="#overview"><span>01</span> Panoramica</a>
+        <a class="side-link" href="#contacts"><span>02</span> Contatti</a>
+        <a class="side-link" href="#program"><span>03</span> Programma</a>
+      </nav>
+      <div class="sidebar-foot">
+        <span class="system-dot"></span><span>Backend connesso</span>
+        <button id="logoutButton" type="button">Esci</button>
+      </div>
+    </aside>
+
+    <main id="main" class="dashboard">
+      <header class="dash-header">
+        <div><p class="kicker">Metodo ZAC · Luigi Zaccone</p><h1>Centro <em>controllo.</em></h1></div>
+        <div class="header-date"><span id="todayLabel"></span><button class="icon-button" id="refreshButton" aria-label="Aggiorna dati" title="Aggiorna">↻</button></div>
+      </header>
+
+      <section id="overview" class="dashboard-section">
+        <div class="section-title"><div><p class="section-index">01 / Panoramica</p></div><p>Numeri essenziali, senza rumore.</p></div>
+        <div class="metric-grid" id="metricGrid" aria-live="polite"></div>
+        <div class="insight-grid">
+          <article class="panel level-panel">
+            <div class="panel-heading"><div><p class="panel-label">Profilazione</p><h3>Livelli rilevati</h3></div><span id="levelTotal">0 profili</span></div>
+            <div class="level-bars" id="levelBars"></div>
+          </article>
+          <article class="panel goal-panel">
+            <div class="panel-heading"><div><p class="panel-label">Segnale domanda</p><h3>Obiettivi principali</h3></div></div>
+            <ol class="goal-list" id="goalList"></ol>
+          </article>
+        </div>
+      </section>
+
+      <section id="contacts" class="dashboard-section">
+        <div class="section-title"><div><p class="section-index">02 / Contatti</p></div><button class="text-button" id="exportButton" type="button">Esporta CSV ↓</button></div>
+        <div class="lead-toolbar">
+          <label class="search-control"><span class="sr-only">Cerca contatto</span><input id="searchInput" type="search" placeholder="Cerca nome, email o obiettivo…" /><i>⌕</i></label>
+          <label><span class="sr-only">Filtra livello</span><select id="levelFilter"><option value="tutti">Tutti i livelli</option><option>Principiante</option><option>Intermedio</option><option>Avanzato</option></select></label>
+        </div>
+        <div class="lead-table-wrap">
+          <table class="lead-table">
+            <thead><tr><th>Persona</th><th>Stato</th><th>Obiettivo</th><th>Profilo</th><th>Ingresso</th><th><span class="sr-only">Apri</span></th></tr></thead>
+            <tbody id="leadRows"></tbody>
+          </table>
+          <div class="empty-state" id="emptyState" hidden><span>—</span><h3>Nessun contatto trovato</h3><p>Prova a cambiare i filtri di ricerca.</p></div>
+        </div>
+      </section>
+
+      <section id="program" class="dashboard-section">
+        <div class="section-title"><div><p class="section-index">03 / Programma</p></div><p>Il PDF resta privato fino allo sblocco.</p></div>
+        <div class="program-layout">
+          <form class="upload-panel" id="uploadForm">
+            <label class="drop-zone" id="dropZone">
+              <input id="pdfInput" type="file" accept="application/pdf,.pdf" />
+              <span class="upload-icon">↑</span>
+              <strong>Carica il programma PDF</strong>
+              <small id="fileHint">Trascina qui o scegli un file · massimo 4 MB</small>
+            </label>
+            <button class="primary-button" id="uploadButton" type="submit" disabled>Carica il programma <span>→</span></button>
+            <p class="form-message" id="uploadMessage" role="status" aria-live="polite"></p>
+          </form>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <aside class="detail-drawer" id="detailDrawer" aria-hidden="true" aria-labelledby="drawerTitle">
+    <div class="drawer-head"><div><p class="kicker">Scheda contatto</p><h2 id="drawerTitle"></h2></div><button class="icon-button" id="closeDrawer" aria-label="Chiudi dettaglio">×</button></div>
+    <div class="drawer-body" id="drawerBody"></div>
+  </aside>
+  <div class="drawer-scrim" id="drawerScrim" hidden></div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script type="module" src="admin.js"></script>
+</body>
+</html>
