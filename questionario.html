@@ -430,7 +430,7 @@ async function submit(){
     if(result.program.available){
       download.href=result.program.downloadUrl;
       download.hidden=false;
-      document.getElementById('deliveryMessage').innerHTML='Il tuo accesso è stato verificato. Il link qui sotto è personale e temporaneo.';
+      document.getElementById('deliveryMessage').textContent='Il link è personale e funziona una sola volta. Dopo il download non sarà più utilizzabile.';
     }else{
       download.hidden=true;
       document.getElementById('deliveryMessage').innerHTML='Il programma non è ancora pubblicato. Il tuo profilo è salvato: riceverai l’avviso quando Luigi lo renderà disponibile.';
@@ -445,6 +445,16 @@ async function submit(){
     document.querySelector('.quiz-card').classList.remove('sending');
   }
 }
+
+document.getElementById('downloadBtn').addEventListener('click',event=>{
+  const download=event.currentTarget;
+  download.setAttribute('aria-disabled','true');
+  download.style.pointerEvents='none';
+  setTimeout(()=>{
+    download.hidden=true;
+    document.getElementById('deliveryMessage').textContent='Download avviato. Per sicurezza il link non è più utilizzabile.';
+  },0);
+},{once:true});
 
 show(0);
 </script>

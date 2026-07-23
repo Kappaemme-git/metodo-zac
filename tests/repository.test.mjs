@@ -23,6 +23,8 @@ test('archivio locale salva lead, idempotenza e stato programma', async () => {
     assert.equal(stats.contacts, 1);
     assert.equal(stats.submissions, 1);
     assert.equal(stats.byLevel.Intermedio, 1);
+    assert.equal((await repository.consumeDownloadTokenHash('token-hash')).id, first.id);
+    assert.equal(await repository.consumeDownloadTokenHash('token-hash'), null);
 
     const pdf = Buffer.from('%PDF-1.4\n% test\n');
     const program = await repository.saveProgram(pdf, 'programma demo.pdf');

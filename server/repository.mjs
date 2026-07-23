@@ -180,6 +180,20 @@ export class FileRepository {
     return data.submissions.find((item) => item.deliveryTokenHash === tokenHash) || null;
   }
 
+  async consumeDownloadTokenHash(tokenHash) {
+    const data = await this.read();
+    const index = data.submissions.findIndex((item) => item.deliveryTokenHash === tokenHash);
+    if (index < 0) return null;
+    const submission = data.submissions[index];
+    data.submissions[index] = {
+      ...submission,
+      deliveryTokenHash: `used:${id()}`,
+      updatedAt: isoNow(),
+    };
+    await this.write(data);
+    return submission;
+  }
+
   async listLeads(filters) {
     const data = await this.read();
     return filterLeads(mergeLeads(data.waitlist, data.submissions), filters);
@@ -332,6 +346,19 @@ export class SupabaseRepository {
   async findSubmissionByTokenHash(tokenHash) {
     const { data, error } = await this.supabase.from('questionnaire_submissions')
       .select('*').eq('delivery_token_hash', tokenHash).maybeSingle();
+    if (error) throw error;
+    return data ? fromDbSubmission(data) : null;
+  }
+
+  async consumeDownloadTokenHash(tokenHash) {
+    const { data, error } = await this.supabase.from('questionnaire_submissions')
+      .update({
+        delivery_token_hash: `used:${crypto.randomUUID()}`,
+        updated_at: isoNow(),
+      })
+      .eq('delivery_token_hash', tokenHash)
+      .select('*')
+      .maybeSingle();
     if (error) throw error;
     return data ? fromDbSubmission(data) : null;
   }

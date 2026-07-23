@@ -12,10 +12,13 @@ export default {
         return json({ ok: false, error: 'Link di download non valido.' }, 403);
       }
       const repository = getRepository();
-      const submission = await repository.findSubmissionByTokenHash(sha256(token));
+      const tokenHash = sha256(token);
+      const submission = await repository.findSubmissionByTokenHash(tokenHash);
       if (!submission) return json({ ok: false, error: 'Link di download non valido.' }, 403);
       const asset = await repository.resolveProgramDownload();
       if (!asset) return json({ ok: false, error: 'Il programma non è ancora disponibile.' }, 425);
+      const consumed = await repository.consumeDownloadTokenHash(tokenHash);
+      if (!consumed) return json({ ok: false, error: 'Questo link è già stato utilizzato.' }, 403);
       if (asset.kind === 'redirect') return Response.redirect(asset.url, 302);
       const file = await readFile(asset.path);
       const filename = String(asset.filename || 'programma-metodo-zac.pdf').replace(/["\r\n]/g, '');

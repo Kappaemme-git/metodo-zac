@@ -7,7 +7,8 @@
 3. Il browser invia risposte e consensi; il server valida le opzioni e
    ricalcola punteggio, livello e profilo.
 4. Il server salva una submission idempotente e restituisce un token personale.
-5. Il download verifica il token e genera un link Supabase firmato di 10 minuti.
+5. Il download consuma il token al primo utilizzo e genera un link Supabase
+   firmato di 10 minuti. Lo stesso collegamento non può essere riutilizzato.
 6. Luigi gestisce contatti e PDF da `/admin.html`.
 
 ## Esecuzione locale
@@ -77,7 +78,7 @@ firmato Supabase.
 - Confronto password timing-safe.
 - Punteggio calcolato solo dal server.
 - Token download derivato con HMAC e salvato soltanto come hash.
-- PDF privato e link breve.
+- PDF privato e token di download utilizzabile una sola volta.
 - Consenso operativo separato dal consenso marketing.
 - Honeypot, compilazione minima di 5 secondi, idempotenza e rate limit orario.
 - Hash IP ruotato giornalmente; nessun IP salvato in chiaro.

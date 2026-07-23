@@ -30,3 +30,9 @@ test('gli errori del backend riportano alla domanda corretta', () => {
   assert.match(html, /motivation\s*:\s*['"]open2['"]/);
   assert.match(html, /showServerValidation\(error\.field,\s*error\.message\)/);
 });
+
+test('il link del programma sparisce dopo il primo utilizzo', () => {
+  assert.match(html, /funziona una sola volta/);
+  assert.match(html, /download\.hidden\s*=\s*true/);
+  assert.match(html, /link non è più utilizzabile/);
+});

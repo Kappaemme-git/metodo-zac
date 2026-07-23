@@ -53,7 +53,7 @@ npm run check
 - Questionario con consenso operativo e consenso marketing facoltativo separati.
 - Questionario validato e ricalcolato sul server; il browser non decide il punteggio.
 - Profilo `Principiante / Intermedio / Avanzato` con messaggio personalizzato.
-- PDF privato, caricato da Luigi e consegnato tramite token personale.
+- PDF privato, caricato da Luigi e consegnato tramite token personale monouso.
 - Dashboard protetta con statistiche, filtri, dettagli ed export CSV.
 - Adapter locale persistente e adapter Supabase per produzione.
 - Honeypot, tempo minimo, idempotenza e limite orario su hash IP giornaliero.

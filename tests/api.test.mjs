@@ -101,6 +101,10 @@ test('flusso completo: login, upload privato, questionario e download', async ()
     assert.equal(downloaded.headers.get('content-type'), 'application/pdf');
     assert.match(Buffer.from(await downloaded.arrayBuffer()).toString(), /^%PDF-/);
 
+    const replayed = await programApi.fetch(new Request(`http://localhost${result.program.downloadUrl}`));
+    assert.equal(replayed.status, 403);
+    assert.equal((await replayed.json()).error, 'Link di download non valido.');
+
     const deleted = await programAdminApi.fetch(new Request('http://localhost/api/admin/program', {
       method: 'DELETE',
       headers: { cookie },
