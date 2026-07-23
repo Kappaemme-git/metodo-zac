@@ -10,6 +10,53 @@ import programApi from '../api/program.js';
 import { resetRepositoryForTests } from '../server/repository.mjs';
 import { PRIVACY_VERSION, QUESTIONNAIRE_VERSION } from '../server/questionnaire.mjs';
 
+test('il questionario resta chiuso finché il PDF non è pubblicato', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'zac-api-closed-'));
+  process.env.ZAC_STORE_PATH = join(dir, 'store.json');
+  process.env.DOWNLOAD_TOKEN_SECRET = 'test-download-secret-with-more-than-32-characters';
+  process.env.IP_HASH_SECRET = 'test-ip-secret-with-more-than-32-characters';
+  resetRepositoryForTests();
+  try {
+    const response = await questionnaireApi.fetch(new Request('http://localhost/api/questionnaire', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        idempotencyKey: 'test-closed-key-1234567890',
+        questionnaireVersion: QUESTIONNAIRE_VERSION,
+        privacyVersion: PRIVACY_VERSION,
+        privacyAccepted: true,
+        startedAt: Date.now() - 10_000,
+        firstName: 'Mario',
+        lastName: 'Rossi',
+        email: 'mario@example.com',
+        age: 33,
+        gender: 'Uomo',
+        improvementGoal: 'Aumentare massa e proporzioni.',
+        motivation: 'Voglio allenarmi con un criterio finalmente misurabile.',
+        answers: {
+          obiettivo: 'Aumentare massa muscolare',
+          esperienza: '2 - 5 anni',
+          frequenza: '3-4',
+          alimentazione: 'Sì',
+          disciplina: '8',
+          costanza: 'Mai',
+          consapevolezza: 'Spesso',
+          tecnica: 'Buona',
+          ostacolo: 'Programmazione',
+        },
+      }),
+    }));
+    assert.equal(response.status, 425);
+    assert.equal((await response.json()).error, 'Il programma non è ancora disponibile.');
+  } finally {
+    resetRepositoryForTests();
+    delete process.env.ZAC_STORE_PATH;
+    delete process.env.DOWNLOAD_TOKEN_SECRET;
+    delete process.env.IP_HASH_SECRET;
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
 test('flusso completo: login, upload privato, questionario e download', async () => {
   const dir = await mkdtemp(join(tmpdir(), 'zac-api-'));
   process.env.ZAC_STORE_PATH = join(dir, 'store.json');

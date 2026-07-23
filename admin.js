@@ -34,7 +34,7 @@ async function loadOverview(){
   try{
     const data=await api('/api/admin/overview?limit=500');
     state.stats=data.stats;state.leads=data.leads;
-    renderStats();renderLeads();renderProgram(data.stats.program);
+    renderStats();renderLeads();
   }catch(error){
     if(error.status===401){adminShell.hidden=true;loginScreen.hidden=false;return;}
     toast(error.message);
@@ -44,10 +44,10 @@ async function loadOverview(){
 function renderStats(){
   const s=state.stats;
   const metrics=[
-    ['Contatti unici',s.contacts,'tra lista e questionario'],
-    ['Questionari',s.submissions,`${s.recent} negli ultimi 7 giorni`],
-    ['Lista d’attesa',s.waitlist,'persone da avvisare'],
-    ['Consenso contenuti',s.marketingConsents,'opt-in separati'],
+    ['Questionari ricevuti',s.submissions,'profili completi'],
+    ['Ultimi 7 giorni',s.recent,'nuovi questionari'],
+    ['Consenso contenuti',s.marketingConsents,'opt-in facoltativi'],
+    ['Programma',s.program.active?'Online':'In pausa',s.program.filename||'nessun PDF caricato'],
   ];
   $('#metricGrid').innerHTML=metrics.map(([label,value,note])=>`<article class="metric"><span class="metric-label">${label}</span><b class="metric-value">${value}</b><span class="metric-note">${note}</span></article>`).join('');
   const total=Math.max(s.submissions,1);$('#levelTotal').textContent=`${s.submissions} ${s.submissions===1?'profilo':'profili'}`;
@@ -56,8 +56,8 @@ function renderStats(){
 }
 
 function renderLeads(){
-  const search=$('#searchInput').value.trim().toLowerCase(),status=$('#statusFilter').value,level=$('#levelFilter').value;
-  const leads=state.leads.filter(item=>(status==='tutti'||item.status===status)&&(level==='tutti'||item.level===level)&&(!search||`${item.name} ${item.email} ${item.goal||''}`.toLowerCase().includes(search)));
+  const search=$('#searchInput').value.trim().toLowerCase(),level=$('#levelFilter').value;
+  const leads=state.leads.filter(item=>item.status==='questionario'&&(level==='tutti'||item.level===level)&&(!search||`${item.name} ${item.email} ${item.goal||''}`.toLowerCase().includes(search)));
   $('#emptyState').hidden=leads.length>0;
   $('#leadRows').innerHTML=leads.map(item=>`<tr>
     <td><div class="person-cell"><span class="lead-avatar">${initials(item.name)}</span><span><b>${escapeHtml(item.name)}</b><small>${escapeHtml(item.email)}</small></span></div></td>
@@ -65,13 +65,6 @@ function renderLeads(){
     <td>${escapeHtml(item.goal||'—')}</td><td>${item.level?`<span class="level-pill">${escapeHtml(item.level)} · ${item.score}</span>`:'—'}</td>
     <td>${formatDate(item.createdAt)}</td><td><button class="row-open" type="button" data-lead="${item.id}" aria-label="Apri ${escapeHtml(item.name)}">→</button></td></tr>`).join('');
   document.querySelectorAll('[data-lead]').forEach(button=>button.addEventListener('click',()=>openLead(state.leads.find(item=>item.id===button.dataset.lead))));
-}
-
-function renderProgram(program){
-  $('#programName').textContent=program.filename||'Nessun PDF caricato';
-  $('#programMeta').textContent=program.uploadedAt?`Caricato il ${formatDate(program.uploadedAt)} · link privati di 10 minuti`:'Carica il file definitivo prima del lancio.';
-  $('#programToggle').disabled=!program.filename;$('#programToggle').checked=Boolean(program.active);
-  $('#programState').textContent=program.active?'Pubblicato':'Non pubblicato';
 }
 
 function openLead(lead){
@@ -90,7 +83,7 @@ function closeDrawer(){
 }
 
 $('#closeDrawer').addEventListener('click',closeDrawer);$('#drawerScrim').addEventListener('click',closeDrawer);document.addEventListener('keydown',event=>{if(event.key==='Escape')closeDrawer();});
-$('#refreshButton').addEventListener('click',loadOverview);['#searchInput','#statusFilter','#levelFilter'].forEach(selector=>$(selector).addEventListener(selector==='#searchInput'?'input':'change',renderLeads));
+$('#refreshButton').addEventListener('click',loadOverview);['#searchInput','#levelFilter'].forEach(selector=>$(selector).addEventListener(selector==='#searchInput'?'input':'change',renderLeads));
 $('#logoutButton').addEventListener('click',async()=>{await api('/api/admin/session',{method:'DELETE'});adminShell.hidden=true;loginScreen.hidden=false;});
 
 $('#pdfInput').addEventListener('change',()=>selectFile($('#pdfInput').files[0]));
@@ -110,16 +103,9 @@ $('#uploadForm').addEventListener('submit',async event=>{
   $('#uploadButton').disabled=true;$('#uploadButton').textContent='Caricamento…';
   try{
     const result=await api('/api/admin/program',{method:'PUT',headers:{'content-type':'application/pdf','x-file-name':encodeURIComponent(file.name)},body:file});
-    renderProgram(result.program);message.textContent=result.message;message.classList.add('success');state.stats.program=result.program;selectFile(null);$('#pdfInput').value='';toast('Programma caricato e pubblicato.');
+    message.textContent='Programma caricato correttamente.';message.classList.add('success');state.stats.program=result.program;renderStats();selectFile(null);$('#pdfInput').value='';toast('Programma caricato correttamente.');
   }catch(error){message.textContent=error.message;}
-  finally{$('#uploadButton').disabled=!state.selectedFile;$('#uploadButton').innerHTML='Carica e pubblica <span>→</span>';}
-});
-
-$('#programToggle').addEventListener('change',async event=>{
-  const active=event.target.checked;event.target.disabled=true;
-  try{const result=await api('/api/admin/program',{method:'PATCH',headers:{'content-type':'application/json'},body:JSON.stringify({active})});renderProgram(result.program);toast(active?'Programma pubblicato.':'Programma messo in pausa.');}
-  catch(error){event.target.checked=!active;toast(error.message);}
-  finally{event.target.disabled=false;}
+  finally{$('#uploadButton').disabled=!state.selectedFile;$('#uploadButton').innerHTML='Carica il programma <span>→</span>';}
 });
 
 $('#exportButton').addEventListener('click',()=>{

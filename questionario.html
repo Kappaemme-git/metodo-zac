@@ -7,11 +7,13 @@
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <title>Questionario — Metodo ZAC</title>
   <meta name="description" content="Rispondi al questionario del Metodo ZAC e sblocca il programma gratuito di 6 mesi." />
+  <script>document.documentElement.classList.add('quiz-gated');</script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500;1,9..144,600&family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css?v=hero-circle-2" />
   <style>
+    .quiz-gated body{visibility:hidden;}
     .quiz-page{min-height:100vh;display:flex;flex-direction:column;background:radial-gradient(120% 100% at 80% 0%,#163055 0%,var(--ink-2) 46%,#070F1C 100%);}
     .quiz-nav{position:static;padding:22px 0;background:none;}
     .quiz-nav .wrap{display:flex;align-items:center;justify-content:space-between;}
@@ -207,6 +209,18 @@
   </main>
 
 <script>
+// Il questionario esiste solo come passaggio per sbloccare un PDF già pubblicato.
+fetch('/api/config',{headers:{accept:'application/json'}})
+  .then(response=>response.ok?response.json():Promise.reject())
+  .then(config=>{
+    if(!config?.programAvailable){
+      location.replace('index.html#programma');
+      return;
+    }
+    document.documentElement.classList.remove('quiz-gated');
+  })
+  .catch(()=>location.replace('index.html#programma'));
+
 /* ============================================================
    QUESTIONARIO METODO ZAC
    Punteggio su 100 → 0-39 Principiante · 40-69 Intermedio · 70-100 Avanzato

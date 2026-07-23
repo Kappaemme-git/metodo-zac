@@ -49,7 +49,7 @@
       </header>
 
       <section id="overview" class="dashboard-section">
-        <div class="section-title"><div><p class="section-index">01 / Panoramica</p><h2>Il lancio, in un colpo d’occhio.</h2></div><p>Numeri essenziali, senza rumore.</p></div>
+        <div class="section-title"><div><p class="section-index">01 / Panoramica</p></div><p>Numeri essenziali, senza rumore.</p></div>
         <div class="metric-grid" id="metricGrid" aria-live="polite"></div>
         <div class="insight-grid">
           <article class="panel level-panel">
@@ -64,10 +64,9 @@
       </section>
 
       <section id="contacts" class="dashboard-section">
-        <div class="section-title"><div><p class="section-index">02 / Contatti</p><h2>Persone, non righe.</h2></div><button class="text-button" id="exportButton" type="button">Esporta CSV ↓</button></div>
+        <div class="section-title"><div><p class="section-index">02 / Contatti</p></div><button class="text-button" id="exportButton" type="button">Esporta CSV ↓</button></div>
         <div class="lead-toolbar">
           <label class="search-control"><span class="sr-only">Cerca contatto</span><input id="searchInput" type="search" placeholder="Cerca nome, email o obiettivo…" /><i>⌕</i></label>
-          <label><span class="sr-only">Filtra stato</span><select id="statusFilter"><option value="tutti">Tutti gli stati</option><option value="attesa">Lista d’attesa</option><option value="questionario">Questionario completo</option></select></label>
           <label><span class="sr-only">Filtra livello</span><select id="levelFilter"><option value="tutti">Tutti i livelli</option><option>Principiante</option><option>Intermedio</option><option>Avanzato</option></select></label>
         </div>
         <div class="lead-table-wrap">
@@ -80,13 +79,8 @@
       </section>
 
       <section id="program" class="dashboard-section">
-        <div class="section-title"><div><p class="section-index">03 / Programma</p><h2>Pubblica quando è pronto.</h2></div><p>Il PDF resta privato fino allo sblocco.</p></div>
+        <div class="section-title"><div><p class="section-index">03 / Programma</p></div><p>Il PDF resta privato fino allo sblocco.</p></div>
         <div class="program-layout">
-          <article class="program-status-card">
-            <div class="program-orbit" aria-hidden="true"><span>PDF</span></div>
-            <div><p class="panel-label">Stato del programma</p><h3 id="programName">Nessun PDF caricato</h3><p id="programMeta">Carica il file definitivo prima del lancio.</p></div>
-            <label class="publish-toggle"><input id="programToggle" type="checkbox" disabled /><span></span><b id="programState">Non pubblicato</b></label>
-          </article>
           <form class="upload-panel" id="uploadForm">
             <label class="drop-zone" id="dropZone">
               <input id="pdfInput" type="file" accept="application/pdf,.pdf" />
@@ -94,7 +88,7 @@
               <strong>Carica il programma PDF</strong>
               <small id="fileHint">Trascina qui o scegli un file · massimo 4 MB</small>
             </label>
-            <button class="primary-button" id="uploadButton" type="submit" disabled>Carica e pubblica <span>→</span></button>
+            <button class="primary-button" id="uploadButton" type="submit" disabled>Carica il programma <span>→</span></button>
             <p class="form-message" id="uploadMessage" role="status" aria-live="polite"></p>
           </form>
         </div>

@@ -350,31 +350,15 @@
   <section id="programma">
     <div class="wrap">
       <div class="prog-card reveal">
-        <span class="prog-badge" id="programBadge">In arrivo · Agosto 2026</span>
-        <h2 id="programTitle">Il programma gratuito<br>arriva ad <span class="gold">agosto.</span></h2>
-        <p id="programCopy">Un percorso completo di 6 mesi del Metodo ZAC. Lascia il tuo contatto: quando sarà disponibile riceverai l’accesso al questionario e potrai sbloccare il PDF.</p>
-        <form class="waitlist-form" id="waitlistForm" novalidate>
-          <div class="waitlist-fields">
-            <label><span>Nome</span><input name="name" type="text" autocomplete="name" placeholder="Il tuo nome" required maxlength="100" /></label>
-            <label><span>Email</span><input name="email" type="email" autocomplete="email" placeholder="nome@email.it" required maxlength="254" /></label>
-            <label><span>Obiettivo</span>
-              <select name="goal">
-                <option value="">Seleziona (facoltativo)</option>
-                <option>Aumentare massa muscolare</option>
-                <option>Perdere grasso</option>
-                <option>Ricomposizione corporea</option>
-                <option>Migliorare forza e performance</option>
-              </select>
-            </label>
-          </div>
-          <input class="hp-field" name="website" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" />
-          <label class="consent-row"><input name="privacy" type="checkbox" required /> <span>Ho letto l’<a href="privacy.html" target="_blank">informativa privacy</a> e acconsento al trattamento necessario per ricevere l’avviso.</span></label>
-          <label class="consent-row consent-row--optional"><input name="marketing" type="checkbox" /> <span>Voglio ricevere anche contenuti e aggiornamenti del Metodo ZAC. Facoltativo.</span></label>
-          <button class="btn btn-primary waitlist-submit" type="submit">Avvisami ad agosto <span class="arr">→</span></button>
-          <p class="form-status" id="waitlistStatus" role="status" aria-live="polite"></p>
-        </form>
-        <a class="btn btn-primary program-live-cta" id="programLiveCta" href="questionario.html" hidden>Scopri il tuo profilo <span class="arr">→</span></a>
-        <p class="prog-note">Niente spam. Il consenso agli aggiornamenti è separato e facoltativo.</p>
+        <span class="prog-badge">Disponibile ora</span>
+        <h2>Scopri il tuo livello.<br>Sblocca il <span class="gold">programma.</span></h2>
+        <p>Rispondi al questionario del Metodo ZAC, ricevi il tuo profilo personale e scarica gratuitamente il programma completo.</p>
+        <a class="btn btn-primary program-live-cta" href="questionario.html">Inizia il questionario <span class="arr">→</span></a>
+        <div class="prog-steps" aria-label="Come funziona">
+          <span><i>1</i> Rispondi</span>
+          <span><i>2</i> Scopri il profilo</span>
+          <span><i>3</i> Scarica il PDF</span>
+        </div>
       </div>
     </div>
   </section>
@@ -414,6 +398,7 @@
         <a href="#chi-sono">Chi Sono</a>
         <a href="https://www.instagram.com/luigizaccone/" target="_blank" rel="noopener">Instagram</a>
         <a href="privacy.html">Privacy</a>
+        <a href="admin.html">Area riservata</a>
       </div>
     </div>
     <p class="foot-note">© <span id="year"></span> Metodo ZAC — Luigi Zaccone · Disciplina · Struttura · Evoluzione</p>
@@ -452,51 +437,6 @@
     document.querySelectorAll('.nav-links a').forEach(a=>a.addEventListener('click',()=>nav.classList.remove('open')));
 
     document.getElementById('year').textContent=new Date().getFullYear();
-
-    // Backend funnel: lista d'attesa ora, questionario quando Luigi pubblica il PDF.
-    const waitlistForm=document.getElementById('waitlistForm');
-    const waitlistStatus=document.getElementById('waitlistStatus');
-    const privacyVersion='privacy-2026-07-v1';
-    const utm=Object.fromEntries(['source','medium','campaign','content','term'].map(k=>[k,new URLSearchParams(location.search).get('utm_'+k)]).filter(([,v])=>v));
-    fetch('/api/config',{headers:{accept:'application/json'}})
-      .then(r=>r.ok?r.json():null)
-      .then(config=>{
-        if(!config?.programAvailable)return;
-        document.getElementById('programBadge').textContent='Disponibile ora';
-        document.getElementById('programTitle').innerHTML='Scopri il tuo livello.<br>Sblocca il <span class="gold">programma.</span>';
-        document.getElementById('programCopy').textContent='Rispondi al questionario del Metodo ZAC. Riceverai un profilo personale e potrai scaricare il programma gratuito.';
-        waitlistForm.hidden=true;
-        document.getElementById('programLiveCta').hidden=false;
-      }).catch(()=>{});
-
-    waitlistForm.addEventListener('submit',async event=>{
-      event.preventDefault();
-      waitlistStatus.className='form-status';
-      if(!waitlistForm.reportValidity())return;
-      const data=new FormData(waitlistForm);
-      const button=waitlistForm.querySelector('button[type="submit"]');
-      button.disabled=true;button.textContent='Registrazione…';
-      try{
-        const response=await fetch('/api/waitlist',{
-          method:'POST',headers:{'content-type':'application/json'},
-          body:JSON.stringify({
-            name:data.get('name'),email:data.get('email'),goal:data.get('goal'),website:data.get('website'),
-            privacyAccepted:data.get('privacy')==='on',privacyVersion,
-            marketingConsent:data.get('marketing')==='on',source:'landing',utm,
-          }),
-        });
-        const result=await response.json().catch(()=>({}));
-        if(!response.ok)throw new Error(result.error||'Non riesco a registrarti in questo momento.');
-        waitlistStatus.textContent=result.message;
-        waitlistStatus.classList.add('success');
-        waitlistForm.reset();
-      }catch(error){
-        waitlistStatus.textContent=error.message;
-        waitlistStatus.classList.add('error');
-      }finally{
-        button.disabled=false;button.innerHTML='Avvisami ad agosto <span class="arr">→</span>';
-      }
-    });
 
     // parallax montagne al mouse
     const titleWrap=document.querySelector('.hero-title-wrap');

@@ -16,6 +16,4 @@ for(const [firstName,lastName,email,age,changes,goal] of samples){
   const payload=validateQuestionnaire({questionnaireVersion:QUESTIONNAIRE_VERSION,privacyVersion:PRIVACY_VERSION,privacyAccepted:true,marketingConsent:true,startedAt:Date.now()-10_000,firstName,lastName,email,age,gender:firstName==='Giulia'||firstName==='Martina'?'Donna':'Uomo',answers:{...baseAnswers,...changes,obiettivo:goal},improvementGoal:'Costruire un fisico più forte, proporzionato e sostenibile.',motivation:'Voglio vedere finalmente una progressione chiara e smettere di allenarmi a caso.'});
   await repository.saveSubmission(payload,{idempotencyKey:key,deliveryTokenHash:sha256(key),ipHash:null});
 }
-await repository.saveWaitlist({name:'Luca Bianchi',email:'luca@example.com',goal:'Perdere grasso',marketingConsent:false,privacyVersion:PRIVACY_VERSION,source:'landing',utm:{}},{ipHash:null});
-await repository.saveWaitlist({name:'Sara De Luca',email:'sara@example.com',goal:'Aumentare massa muscolare',marketingConsent:true,privacyVersion:PRIVACY_VERSION,source:'instagram',utm:{source:'instagram'}},{ipHash:null});
 console.log('Dati demo inseriti in .data/dev-store.json');

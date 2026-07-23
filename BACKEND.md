@@ -2,9 +2,9 @@
 
 ## Flusso implementato
 
-1. Prima del lancio, la home salva nome/email/obiettivo nella lista d’attesa.
-2. Quando un PDF è pubblicato, la home espone il questionario.
-3. Il browser invia solo risposte e consensi; il server valida le opzioni e
+1. La home porta direttamente al questionario per sbloccare il programma.
+2. Il questionario è utilizzabile soltanto quando un PDF è stato caricato.
+3. Il browser invia risposte e consensi; il server valida le opzioni e
    ricalcola punteggio, livello e profilo.
 4. Il server salva una submission idempotente e restituisce un token personale.
 5. Il download verifica il token e genera un link Supabase firmato di 10 minuti.
@@ -49,7 +49,7 @@ repo in Vercel e configura le variabili presenti in `.env.example`:
 Tutti i segreti devono essere lunghi, casuali e diversi. Dopo il deploy:
 
 1. visita `/api/config` e verifica `ok: true`;
-2. prova una registrazione lista d’attesa;
+2. apri il questionario dalla home;
 3. accedi a `/admin.html`;
 4. carica un PDF di prova sotto 4 MB;
 5. compila il questionario e verifica il download;

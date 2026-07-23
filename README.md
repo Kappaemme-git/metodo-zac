@@ -12,7 +12,7 @@ Non mischiare modifiche tra sito e app.
 
 - `index.html` — home (chi siamo, il metodo, Luigi, programma)
 - `metodo.html` — pagina dedicata al metodo e alle 5 fasi
-- `questionario.html` — questionario lead magnet, non ancora collegato alla home
+- `questionario.html` — questionario collegato al programma gratuito in home
 - `risultati.html` — pagina risultati del questionario
 - `style.css` — stile condiviso
 - `assets/` — immagini
@@ -50,7 +50,7 @@ npm run check
 
 ## Backend MVP
 
-- Lista d’attesa con consenso separato per eventuali comunicazioni marketing.
+- Questionario con consenso operativo e consenso marketing facoltativo separati.
 - Questionario validato e ricalcolato sul server; il browser non decide il punteggio.
 - Profilo `Principiante / Intermedio / Avanzato` con messaggio personalizzato.
 - PDF privato, caricato da Luigi e consegnato tramite token personale.

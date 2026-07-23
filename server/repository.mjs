@@ -75,6 +75,13 @@ function mergeLeads(waitlist, submissions) {
     });
   }
   for (const item of submissions) {
+    const current = map.get(item.email);
+    if (
+      current?.status === 'questionario'
+      && new Date(current.createdAt).getTime() >= new Date(item.createdAt).getTime()
+    ) {
+      continue;
+    }
     map.set(item.email, {
       ...publicSubmission(item),
       name: `${item.firstName} ${item.lastName}`.trim(),
@@ -161,6 +168,11 @@ export class FileRepository {
     data.submissions.push(row);
     await this.write(data);
     return row;
+  }
+
+  async findSubmissionByIdempotencyKey(idempotencyKey) {
+    const data = await this.read();
+    return data.submissions.find((item) => item.idempotencyKey === idempotencyKey) || null;
   }
 
   async findSubmissionByTokenHash(tokenHash) {
@@ -286,6 +298,13 @@ export class SupabaseRepository {
       return fromDbSubmission(existing.data);
     }
     throw error;
+  }
+
+  async findSubmissionByIdempotencyKey(idempotencyKey) {
+    const { data, error } = await this.supabase.from('questionnaire_submissions')
+      .select('*').eq('idempotency_key', idempotencyKey).maybeSingle();
+    if (error) throw error;
+    return data ? fromDbSubmission(data) : null;
   }
 
   async findSubmissionByTokenHash(tokenHash) {
