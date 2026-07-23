@@ -53,6 +53,14 @@ function renderStats(){
   const total=Math.max(s.submissions,1);$('#levelTotal').textContent=`${s.submissions} ${s.submissions===1?'profilo':'profili'}`;
   $('#levelBars').innerHTML=Object.entries(s.byLevel).map(([label,value])=>`<div class="level-row"><label>${label}</label><div class="level-track"><div class="level-fill" style="width:${Math.round(value/total*100)}%"></div></div><b>${value}</b></div>`).join('');
   $('#goalList').innerHTML=s.goals.length?s.goals.map(({label,value})=>`<li><span>${escapeHtml(label)}</span><b>${value}</b></li>`).join(''):'<li class="empty-copy">Gli obiettivi appariranno dopo i primi questionari.</li>';
+  renderProgram(s.program);
+}
+
+function renderProgram(program){
+  const hasProgram=Boolean(program?.filename);
+  $('#programFileBar').hidden=!hasProgram;
+  $('#currentProgramName').textContent=hasProgram?program.filename:'';
+  $('#removeProgramButton').disabled=!hasProgram;
 }
 
 function renderLeads(){
@@ -60,10 +68,10 @@ function renderLeads(){
   const leads=state.leads.filter(item=>item.status==='questionario'&&(level==='tutti'||item.level===level)&&(!search||`${item.name} ${item.email} ${item.goal||''}`.toLowerCase().includes(search)));
   $('#emptyState').hidden=leads.length>0;
   $('#leadRows').innerHTML=leads.map(item=>`<tr>
-    <td><div class="person-cell"><span class="lead-avatar">${initials(item.name)}</span><span><b>${escapeHtml(item.name)}</b><small>${escapeHtml(item.email)}</small></span></div></td>
-    <td><span class="status-pill ${item.status==='questionario'?'complete':''}">${item.status==='questionario'?'Completo':'In attesa'}</span></td>
-    <td>${escapeHtml(item.goal||'—')}</td><td>${item.level?`<span class="level-pill">${escapeHtml(item.level)} · ${item.score}</span>`:'—'}</td>
-    <td>${formatDate(item.createdAt)}</td><td><button class="row-open" type="button" data-lead="${item.id}" aria-label="Apri ${escapeHtml(item.name)}">→</button></td></tr>`).join('');
+    <td data-label="Persona"><div class="person-cell"><span class="lead-avatar">${initials(item.name)}</span><span><b>${escapeHtml(item.name)}</b><small>${escapeHtml(item.email)}</small></span></div></td>
+    <td data-label="Stato"><span class="status-pill ${item.status==='questionario'?'complete':''}">${item.status==='questionario'?'Completo':'In attesa'}</span></td>
+    <td data-label="Obiettivo">${escapeHtml(item.goal||'—')}</td><td data-label="Profilo">${item.level?`<span class="level-pill">${escapeHtml(item.level)} · ${item.score}</span>`:'—'}</td>
+    <td data-label="Ingresso">${formatDate(item.createdAt)}</td><td data-label="Dettaglio"><button class="row-open" type="button" data-lead="${item.id}" aria-label="Apri ${escapeHtml(item.name)}">→</button></td></tr>`).join('');
   document.querySelectorAll('[data-lead]').forEach(button=>button.addEventListener('click',()=>openLead(state.leads.find(item=>item.id===button.dataset.lead))));
 }
 
@@ -106,6 +114,20 @@ $('#uploadForm').addEventListener('submit',async event=>{
     message.textContent='Programma caricato correttamente.';message.classList.add('success');state.stats.program=result.program;renderStats();selectFile(null);$('#pdfInput').value='';toast('Programma caricato correttamente.');
   }catch(error){message.textContent=error.message;}
   finally{$('#uploadButton').disabled=!state.selectedFile;$('#uploadButton').innerHTML='Carica il programma <span>→</span>';}
+});
+
+$('#removeProgramButton').addEventListener('click',async()=>{
+  const filename=state.stats?.program?.filename;
+  if(!filename)return;
+  if(!window.confirm(`Rimuovere ${filename}? Il questionario resterà bloccato finché non carichi un nuovo PDF.`))return;
+  const button=$('#removeProgramButton'),message=$('#uploadMessage');
+  button.disabled=true;button.textContent='Rimozione…';message.textContent='';message.className='form-message';
+  try{
+    const result=await api('/api/admin/program',{method:'DELETE'});
+    state.stats.program=result.program;renderStats();
+    message.textContent='PDF rimosso correttamente.';message.classList.add('success');toast('PDF rimosso. Il questionario è ora bloccato.');
+  }catch(error){message.textContent=error.message;}
+  finally{button.textContent='Rimuovi PDF';button.disabled=!state.stats?.program?.filename;}
 });
 
 $('#exportButton').addEventListener('click',()=>{

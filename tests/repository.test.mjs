@@ -31,6 +31,11 @@ test('archivio locale salva lead, idempotenza e stato programma', async () => {
     assert.deepEqual(await readFile(program.path), pdf);
     await repository.setProgramActive(false);
     assert.equal((await repository.getProgram()).active, false);
+    const deleted = await repository.deleteProgram();
+    assert.equal(deleted.active, false);
+    assert.equal(deleted.filename, null);
+    assert.equal(deleted.path, null);
+    await assert.rejects(readFile(program.path), { code: 'ENOENT' });
   } finally {
     await rm(dir, { recursive: true, force: true });
   }

@@ -46,6 +46,7 @@
         <div><p class="kicker">Metodo ZAC · Luigi Zaccone</p><h1>Centro <em>controllo.</em></h1></div>
         <div class="header-date"><span id="todayLabel"></span><button class="icon-button" id="refreshButton" aria-label="Aggiorna dati" title="Aggiorna">↻</button></div>
       </header>
+      <p class="mobile-advisory">La dashboard funziona anche da telefono. Per gestire più comodamente contatti e PDF, è consigliato il computer.</p>
 
       <section id="overview" class="dashboard-section">
         <div class="section-title"><div><p class="section-index">01 / Panoramica</p></div><p>Numeri essenziali, senza rumore.</p></div>
@@ -81,6 +82,11 @@
         <div class="section-title"><div><p class="section-index">03 / Programma</p></div><p>Il PDF resta privato fino allo sblocco.</p></div>
         <div class="program-layout">
           <form class="upload-panel" id="uploadForm">
+            <div class="program-file-bar" id="programFileBar" hidden>
+              <span class="program-file-icon" aria-hidden="true">PDF</span>
+              <span class="program-file-copy"><small>Programma attuale</small><strong id="currentProgramName"></strong></span>
+              <button class="remove-program-button" id="removeProgramButton" type="button">Rimuovi PDF</button>
+            </div>
             <label class="drop-zone" id="dropZone">
               <input id="pdfInput" type="file" accept="application/pdf,.pdf" />
               <span class="upload-icon">↑</span>

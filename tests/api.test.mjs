@@ -100,6 +100,25 @@ test('flusso completo: login, upload privato, questionario e download', async ()
     assert.equal(downloaded.status, 200);
     assert.equal(downloaded.headers.get('content-type'), 'application/pdf');
     assert.match(Buffer.from(await downloaded.arrayBuffer()).toString(), /^%PDF-/);
+
+    const deleted = await programAdminApi.fetch(new Request('http://localhost/api/admin/program', {
+      method: 'DELETE',
+      headers: { cookie },
+    }));
+    assert.equal(deleted.status, 200);
+    assert.deepEqual((await deleted.json()).program, {
+      active: false,
+      filename: null,
+      uploadedAt: null,
+      ready: false,
+    });
+
+    const afterDelete = await programAdminApi.fetch(new Request('http://localhost/api/admin/program', {
+      method: 'GET',
+      headers: { cookie },
+    }));
+    assert.equal(afterDelete.status, 200);
+    assert.equal((await afterDelete.json()).program.ready, false);
   } finally {
     resetRepositoryForTests();
     await rm(dir, { recursive: true, force: true });
