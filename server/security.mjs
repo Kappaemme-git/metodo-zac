@@ -1,6 +1,7 @@
 import { createHash, createHmac, randomBytes, timingSafeEqual } from 'node:crypto';
 
 const SESSION_COOKIE = 'zac_admin';
+const DOWNLOAD_COOKIE = 'zac_download';
 
 function secret(name, minimum = 32) {
   const value = process.env[name];
@@ -60,6 +61,16 @@ export function createAdminSession(request) {
 export function clearAdminSession(request) {
   const secure = new URL(request.url).protocol === 'https:' || process.env.NODE_ENV === 'production';
   return `${SESSION_COOKIE}=; Path=/; HttpOnly; SameSite=Strict; Max-Age=0${secure ? '; Secure' : ''}`;
+}
+
+export function createDownloadSession(request, token) {
+  const secure = new URL(request.url).protocol === 'https:' || process.env.NODE_ENV === 'production';
+  return `${DOWNLOAD_COOKIE}=${token}; Path=/api/program; HttpOnly; SameSite=Strict; Max-Age=7200${secure ? '; Secure' : ''}`;
+}
+
+export function downloadTokenFromRequest(request) {
+  const token = parseCookies(request)[DOWNLOAD_COOKIE] || '';
+  return /^[a-zA-Z0-9_-]{32,128}$/.test(token) ? token : null;
 }
 
 export function hasAdminSession(request) {

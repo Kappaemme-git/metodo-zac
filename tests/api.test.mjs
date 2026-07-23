@@ -70,11 +70,11 @@ test('flusso completo: login, upload privato, questionario e download', async ()
       method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ password: 'test-password' }),
     }));
     assert.equal(login.status, 200);
-    const cookie = login.headers.get('set-cookie').split(';')[0];
+    const adminCookie = login.headers.get('set-cookie').split(';')[0];
 
     const uploaded = await programAdminApi.fetch(new Request('http://localhost/api/admin/program', {
       method: 'PUT',
-      headers: { cookie, 'content-type': 'application/pdf', 'x-file-name': encodeURIComponent('programma-test.pdf') },
+      headers: { cookie: adminCookie, 'content-type': 'application/pdf', 'x-file-name': encodeURIComponent('programma-test.pdf') },
       body: Buffer.from('%PDF-1.4\n% Metodo ZAC test\n'),
     }));
     assert.equal(uploaded.status, 200);
@@ -94,16 +94,24 @@ test('flusso completo: login, upload privato, questionario e download', async ()
     const result = await submitted.json();
     assert.equal(result.ok, true);
     assert.equal(result.program.available, true);
-    assert.match(result.program.downloadUrl, /^\/api\/program\?token=/);
+    assert.equal(result.program.downloadUrl, '/api/program');
+    const downloadCookie = submitted.headers.get('set-cookie').split(';')[0];
+    assert.match(downloadCookie, /^zac_download=/);
 
-    const downloaded = await programApi.fetch(new Request(`http://localhost${result.program.downloadUrl}`));
+    const sharedLink = await programApi.fetch(new Request(`http://localhost${result.program.downloadUrl}`));
+    assert.equal(sharedLink.status, 302);
+    assert.equal(sharedLink.headers.get('location'), 'http://localhost/questionario.html');
+
+    const downloaded = await programApi.fetch(new Request(`http://localhost${result.program.downloadUrl}`, {
+      headers: { cookie: downloadCookie },
+    }));
     assert.equal(downloaded.status, 200);
     assert.equal(downloaded.headers.get('content-type'), 'application/pdf');
     assert.match(Buffer.from(await downloaded.arrayBuffer()).toString(), /^%PDF-/);
 
     const deleted = await programAdminApi.fetch(new Request('http://localhost/api/admin/program', {
       method: 'DELETE',
-      headers: { cookie },
+      headers: { cookie: adminCookie },
     }));
     assert.equal(deleted.status, 200);
     assert.deepEqual((await deleted.json()).program, {
@@ -115,7 +123,7 @@ test('flusso completo: login, upload privato, questionario e download', async ()
 
     const afterDelete = await programAdminApi.fetch(new Request('http://localhost/api/admin/program', {
       method: 'GET',
-      headers: { cookie },
+      headers: { cookie: adminCookie },
     }));
     assert.equal(afterDelete.status, 200);
     assert.equal((await afterDelete.json()).program.ready, false);
