@@ -1,4 +1,4 @@
-import { mkdir, readFile, rename, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, rename, unlink, writeFile } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { createClient } from '@supabase/supabase-js';
 
@@ -202,6 +202,7 @@ export class FileRepository {
     const path = join(this.programDir, storedName);
     await writeFile(path, buffer, { mode: 0o600 });
     const data = await this.read();
+    const previousPath = data.program.path;
     data.program = {
       active: true,
       filename: safeName,
@@ -210,6 +211,27 @@ export class FileRepository {
       updatedAt: isoNow(),
     };
     await this.write(data);
+    if (previousPath && previousPath !== path) {
+      await unlink(previousPath).catch((error) => {
+        if (error.code !== 'ENOENT') console.error('[zac-program-cleanup]', error.message);
+      });
+    }
+    return data.program;
+  }
+
+  async deleteProgram() {
+    const data = await this.read();
+    const previousPath = data.program.path;
+    data.program = {
+      ...structuredClone(EMPTY_STORE.program),
+      updatedAt: isoNow(),
+    };
+    await this.write(data);
+    if (previousPath) {
+      await unlink(previousPath).catch((error) => {
+        if (error.code !== 'ENOENT') console.error('[zac-program-cleanup]', error.message);
+      });
+    }
     return data.program;
   }
 
@@ -345,6 +367,7 @@ export class SupabaseRepository {
   }
 
   async saveProgram(buffer, filename) {
+    const current = await this.getProgram();
     const safeName = filename.replace(/[^a-zA-Z0-9._-]+/g, '-').replace(/^-+|-+$/g, '') || 'programma.pdf';
     const path = `${new Date().toISOString().slice(0, 10)}/${crypto.randomUUID()}-${safeName}`;
     const uploaded = await this.supabase.storage.from('lead-magnets').upload(path, buffer, {
@@ -362,7 +385,33 @@ export class SupabaseRepository {
     };
     const saved = await this.supabase.from('program_config').upsert(row).select().single();
     if (saved.error) throw saved.error;
+    if (current.path && current.path !== path) {
+      const removed = await this.supabase.storage.from(current.bucket || 'lead-magnets').remove([current.path]);
+      if (removed.error) console.error('[zac-program-cleanup]', removed.error.message);
+    }
     return fromDbProgram(saved.data);
+  }
+
+  async deleteProgram() {
+    const current = await this.getProgram();
+    const { data, error } = await this.supabase.from('program_config')
+      .update({
+        active: false,
+        filename: null,
+        storage_bucket: null,
+        storage_path: null,
+        uploaded_at: null,
+        updated_at: isoNow(),
+      })
+      .eq('id', 1)
+      .select()
+      .single();
+    if (error) throw error;
+    if (current.path) {
+      const removed = await this.supabase.storage.from(current.bucket || 'lead-magnets').remove([current.path]);
+      if (removed.error) console.error('[zac-program-cleanup]', removed.error.message);
+    }
+    return fromDbProgram(data);
   }
 
   async setProgramActive(active) {

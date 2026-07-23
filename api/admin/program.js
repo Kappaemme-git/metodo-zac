@@ -26,13 +26,17 @@ export default {
         const program = await repository.saveProgram(buffer, filename);
         return json({ ok: true, program: publicProgram(program), message: 'PDF caricato e pubblicato.' });
       }
+      if (request.method === 'DELETE') {
+        const program = await repository.deleteProgram();
+        return json({ ok: true, program: publicProgram(program), message: 'PDF rimosso.' });
+      }
       if (request.method === 'PATCH') {
         const body = await readJson(request, 4 * 1024);
         if (typeof body.active !== 'boolean') throw new ValidationError('Stato non valido.');
         const program = await repository.setProgramActive(body.active);
         return json({ ok: true, program: publicProgram(program) });
       }
-      return methodNotAllowed(['GET', 'PUT', 'PATCH']);
+      return methodNotAllowed(['GET', 'PUT', 'DELETE', 'PATCH']);
     } catch (error) {
       return handleError(error);
     }
