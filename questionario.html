@@ -430,7 +430,7 @@ async function submit(){
     if(result.program.available){
       download.href=result.program.downloadUrl;
       download.hidden=false;
-      document.getElementById('deliveryMessage').innerHTML='Il tuo accesso è stato verificato. Il link qui sotto è personale e temporaneo.';
+      document.getElementById('deliveryMessage').textContent='Download pronto su questo dispositivo. Da un altro telefono o browser sarà necessario completare il questionario.';
     }else{
       download.hidden=true;
       document.getElementById('deliveryMessage').innerHTML='Il programma non è ancora pubblicato. Il tuo profilo è salvato: riceverai l’avviso quando Luigi lo renderà disponibile.';

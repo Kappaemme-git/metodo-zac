@@ -6,8 +6,10 @@
 2. Il questionario è utilizzabile soltanto quando un PDF è stato caricato.
 3. Il browser invia risposte e consensi; il server valida le opzioni e
    ricalcola punteggio, livello e profilo.
-4. Il server salva una submission idempotente e restituisce un token personale.
-5. Il download verifica il token e genera un link Supabase firmato di 10 minuti.
+4. Il server salva una submission idempotente e autorizza quel browser tramite
+   un cookie `HttpOnly`.
+5. Il download richiede quel cookie e genera un link Supabase firmato di 10 minuti.
+   Copiare il collegamento su un altro dispositivo riporta al questionario.
 6. Luigi gestisce contatti e PDF da `/admin.html`.
 
 ## Esecuzione locale
@@ -76,7 +78,8 @@ firmato Supabase.
 - Cookie admin `HttpOnly`, `SameSite=Strict` e `Secure` in produzione.
 - Confronto password timing-safe.
 - Punteggio calcolato solo dal server.
-- Token download derivato con HMAC e salvato soltanto come hash.
+- Token download derivato con HMAC, salvato soltanto come hash e legato al
+  browser tramite cookie `HttpOnly`.
 - PDF privato e link breve.
 - Consenso operativo separato dal consenso marketing.
 - Honeypot, compilazione minima di 5 secondi, idempotenza e rate limit orario.

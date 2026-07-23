@@ -30,3 +30,7 @@ test('gli errori del backend riportano alla domanda corretta', () => {
   assert.match(html, /motivation\s*:\s*['"]open2['"]/);
   assert.match(html, /showServerValidation\(error\.field,\s*error\.message\)/);
 });
+
+test('il download informa che ogni browser deve completare il questionario', () => {
+  assert.match(html, /Da un altro telefono o browser sarà necessario completare il questionario/);
+});

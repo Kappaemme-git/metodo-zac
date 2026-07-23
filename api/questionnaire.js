@@ -1,7 +1,7 @@
 import { getRepository } from '../server/repository.mjs';
 import { handleError, json, methodNotAllowed, readJson } from '../server/http.mjs';
 import { validateQuestionnaire, ValidationError } from '../server/questionnaire.mjs';
-import { downloadTokenFor, hashIp, sha256 } from '../server/security.mjs';
+import { createDownloadSession, downloadTokenFor, hashIp, sha256 } from '../server/security.mjs';
 
 export default {
   async fetch(request) {
@@ -42,9 +42,9 @@ export default {
         },
         program: {
           available,
-          downloadUrl: available ? `/api/program?token=${encodeURIComponent(deliveryToken)}` : null,
+          downloadUrl: available ? '/api/program' : null,
         },
-      }, 201);
+      }, 201, { 'set-cookie': createDownloadSession(request, deliveryToken) });
     } catch (error) {
       return handleError(error);
     }
