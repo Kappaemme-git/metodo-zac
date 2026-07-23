@@ -45,6 +45,17 @@ test('limita il questionario agli adulti e richiede privacy', () => {
   assert.throws(() => validateQuestionnaire(validPayload({ privacyAccepted: false })), /informativa privacy/);
 });
 
+test('identifica quale risposta aperta è troppo corta', () => {
+  assert.throws(
+    () => validateQuestionnaire(validPayload({ improvementGoal: 'ok' })),
+    (error) => error instanceof ValidationError && error.field === 'improvementGoal',
+  );
+  assert.throws(
+    () => validateQuestionnaire(validPayload({ motivation: 'ok' })),
+    (error) => error instanceof ValidationError && error.field === 'motivation',
+  );
+});
+
 test('valida e normalizza la lista attesa', () => {
   const item = validateWaitlist({
     name: '  Mario   Rossi ', email: 'MARIO@EXAMPLE.COM', goal: 'Massa',
