@@ -766,7 +766,15 @@
   .hero-emblem .em-rule{margin:11px 0 0;width:54px;}
   .section-head h2,.fhead h2,.about h2,.prog-card h2,.contact-card h2,.cta-band h2,.method-cta h2{font-size:32px;line-height:1.12;}
   .sectionHeaderTitle{font-size:34px;}
-  .pcard{padding:24px 16px 26px;}
+  .phase-cards{gap:12px;}
+  .pcard{padding:18px 16px 20px;}
+  .pcard .fase{height:auto;font-size:10px;}
+  .pcard .picon{height:36px;margin:10px 0 6px;}
+  .pcard .picon svg{width:34px;height:34px;}
+  .pcard h3{height:auto;min-height:38px;margin:0 0 8px;font-size:16px;}
+  .pcard .belt{height:38px;margin-bottom:8px;}
+  .pcard .belt .belt-svg{width:90px;}
+  .pcard p{font-size:12.5px;line-height:1.45;margin-bottom:0;max-width:290px;}
   .feat-cta{padding:24px 22px;}
   footer .wrap{flex-direction:column;align-items:flex-start;gap:22px;}
   .hero-crest{width:116px !important;max-width:116px !important;}
