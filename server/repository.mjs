@@ -410,10 +410,7 @@ export class SupabaseRepository {
   }
 
   async finalizeProgramUpload({ path, filename, size }) {
-    const expectedPath = `programs/${path.split('/')[1]}/${filename}`;
-    if (path !== expectedPath || !/^programs\/[0-9a-f-]{36}\/[a-zA-Z0-9._-]+\.pdf$/i.test(path)) {
-      throw new Error('Percorso upload non valido.');
-    }
+    validateProgramUploadPath(path, filename);
     const folder = path.slice(0, path.lastIndexOf('/'));
     const listed = await this.supabase.storage.from('lead-magnets')
       .list(folder, { limit: 10, search: filename });
@@ -443,6 +440,12 @@ export class SupabaseRepository {
       if (removed.error) console.error('[zac-program-cleanup]', removed.error.message);
     }
     return fromDbProgram(saved.data);
+  }
+
+  async abortProgramUpload({ path, filename }) {
+    validateProgramUploadPath(path, filename);
+    const removed = await this.supabase.storage.from('lead-magnets').remove([path]);
+    if (removed.error) throw removed.error;
   }
 
   async deleteProgram() {
@@ -545,6 +548,13 @@ function fromDbProgram(row) {
 function sanitizeProgramFilename(filename) {
   const safeName = String(filename || '').replace(/[^a-zA-Z0-9._-]+/g, '-').replace(/^-+|-+$/g, '');
   return safeName && safeName.toLowerCase().endsWith('.pdf') ? safeName : 'programma-metodo-zac.pdf';
+}
+
+function validateProgramUploadPath(path, filename) {
+  const expectedPath = `programs/${String(path || '').split('/')[1]}/${filename}`;
+  if (path !== expectedPath || !/^programs\/[0-9a-f-]{36}\/[a-zA-Z0-9._-]+\.pdf$/i.test(path)) {
+    throw new Error('Percorso upload non valido.');
+  }
 }
 
 let repository;

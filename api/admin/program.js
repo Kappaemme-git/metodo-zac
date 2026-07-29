@@ -69,6 +69,15 @@ export default {
           const program = await repository.finalizeProgramUpload(ticket);
           return json({ ok: true, program: publicProgram(program), message: 'PDF caricato e pubblicato.' });
         }
+        if (body.action === 'abort-upload') {
+          if (typeof repository.abortProgramUpload !== 'function') {
+            throw new ValidationError('Caricamento diretto non disponibile in questo ambiente.');
+          }
+          const ticket = verifyProgramUploadTicket(body.ticket);
+          if (!ticket) throw new ValidationError('Caricamento scaduto.');
+          await repository.abortProgramUpload(ticket);
+          return json({ ok: true });
+        }
         if (typeof body.active !== 'boolean') throw new ValidationError('Stato non valido.');
         const program = await repository.setProgramActive(body.active);
         return json({ ok: true, program: publicProgram(program) });

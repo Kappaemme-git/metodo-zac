@@ -109,8 +109,9 @@ $('#uploadForm').addEventListener('submit',async event=>{
   if(file.type!=='application/pdf'&&!file.name.toLowerCase().endsWith('.pdf')){message.textContent='Seleziona un PDF.';return;}
   if(file.size>50*1024*1024){message.textContent='Il PDF supera 50 MB.';return;}
   $('#uploadButton').disabled=true;$('#uploadButton').textContent='Caricamento…';
+  let prepared;
   try{
-    const prepared=await api('/api/admin/program',{
+    prepared=await api('/api/admin/program',{
       method:'POST',
       headers:{'content-type':'application/json'},
       body:JSON.stringify({filename:file.name,size:file.size,type:file.type||'application/pdf'}),
@@ -130,7 +131,16 @@ $('#uploadForm').addEventListener('submit',async event=>{
       result=await api('/api/admin/program',{method:'PUT',headers:{'content-type':'application/pdf','x-file-name':encodeURIComponent(file.name)},body:file});
     }
     message.textContent='Programma caricato correttamente.';message.classList.add('success');state.stats.program=result.program;renderStats();selectFile(null);$('#pdfInput').value='';toast('Programma caricato correttamente.');
-  }catch(error){message.textContent=error.message;}
+  }catch(error){
+    if(prepared?.upload?.ticket){
+      await api('/api/admin/program',{
+        method:'PATCH',
+        headers:{'content-type':'application/json'},
+        body:JSON.stringify({action:'abort-upload',ticket:prepared.upload.ticket}),
+      }).catch(()=>{});
+    }
+    message.textContent=error.message;
+  }
   finally{$('#uploadButton').disabled=!state.selectedFile;$('#uploadButton').innerHTML='Carica il programma <span>→</span>';}
 });
 
