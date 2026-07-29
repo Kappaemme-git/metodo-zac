@@ -24,18 +24,25 @@ test('archivio locale salva lead, idempotenza e stato programma', async () => {
     assert.equal(stats.submissions, 1);
     assert.equal(stats.byLevel.Intermedio, 1);
 
-    const pdf = Buffer.from('%PDF-1.4\n% test\n');
-    const program = await repository.saveProgram(pdf, 'programma demo.pdf');
+    const pdf = Buffer.from('%PDF-1.4\n% uomo\n');
+    const donnaPdf = Buffer.from('%PDF-1.4\n% donna\n');
+    const program = await repository.saveProgram(pdf, 'programma uomo.pdf', 'uomo');
+    const donnaProgram = await repository.saveProgram(donnaPdf, 'programma donna.pdf', 'donna');
     assert.equal(program.active, true);
-    assert.match(program.filename, /programma-demo\.pdf/);
+    assert.equal(donnaProgram.active, true);
+    assert.match(program.filename, /programma-uomo\.pdf/);
+    assert.match(donnaProgram.filename, /programma-donna\.pdf/);
     assert.deepEqual(await readFile(program.path), pdf);
+    assert.deepEqual(await readFile(donnaProgram.path), donnaPdf);
     await repository.setProgramActive(false);
     assert.equal((await repository.getProgram()).active, false);
-    const deleted = await repository.deleteProgram();
+    assert.equal((await repository.getProgram('donna')).active, true);
+    const deleted = await repository.deleteProgram('donna');
     assert.equal(deleted.active, false);
     assert.equal(deleted.filename, null);
     assert.equal(deleted.path, null);
-    await assert.rejects(readFile(program.path), { code: 'ENOENT' });
+    await assert.rejects(readFile(donnaProgram.path), { code: 'ENOENT' });
+    assert.deepEqual(await readFile(program.path), pdf);
   } finally {
     await rm(dir, { recursive: true, force: true });
   }

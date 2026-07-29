@@ -40,6 +40,34 @@ function sign(value) {
   return createHmac('sha256', secret('ADMIN_SESSION_SECRET')).update(value).digest('base64url');
 }
 
+export function createProgramUploadTicket({ path, filename, size, variant }) {
+  const payload = Buffer.from(JSON.stringify({
+    scope: 'program-upload',
+    path,
+    filename,
+    size,
+    variant,
+    exp: Date.now() + 2 * 60 * 60 * 1000,
+  })).toString('base64url');
+  return `${payload}.${sign(payload)}`;
+}
+
+export function verifyProgramUploadTicket(value) {
+  try {
+    const [payload, signature] = String(value || '').split('.');
+    if (!payload || !signature || !safeEqual(sign(payload), signature)) return null;
+    const data = JSON.parse(Buffer.from(payload, 'base64url').toString('utf8'));
+    if (
+      data.scope !== 'program-upload'
+      || !['uomo', 'donna'].includes(data.variant)
+      || Number(data.exp) <= Date.now()
+    ) return null;
+    return data;
+  } catch {
+    return null;
+  }
+}
+
 function parseCookies(request) {
   const header = request.headers.get('cookie') || '';
   return Object.fromEntries(header.split(';').map((part) => {

@@ -2,6 +2,8 @@ import { getRepository } from '../server/repository.mjs';
 import { handleError, json, methodNotAllowed, readJson } from '../server/http.mjs';
 import { validateQuestionnaire, ValidationError } from '../server/questionnaire.mjs';
 import { createDownloadSession, downloadTokenFor, hashIp, sha256 } from '../server/security.mjs';
+import { syncQuestionnaireContact } from '../server/brevo.mjs';
+import { programVariantForGender } from '../server/programs.mjs';
 
 export default {
   async fetch(request) {
@@ -15,10 +17,12 @@ export default {
       const payload = validateQuestionnaire(body);
       const deliveryToken = downloadTokenFor(idempotencyKey);
       const repository = getRepository();
-      const program = await repository.getProgram();
+      const programVariant = programVariantForGender(payload.gender);
+      const program = await repository.getProgram(programVariant);
       const available = Boolean(program?.active && program?.path);
       if (!available) {
-        return json({ ok: false, error: 'Il programma non è ancora disponibile.' }, 425);
+        const label = programVariant === 'donna' ? 'Donna' : 'Uomo';
+        return json({ ok: false, error: `Il programma ${label} non è ancora disponibile.` }, 425);
       }
       const ipHash = hashIp(request);
       const existing = await repository.findSubmissionByIdempotencyKey(idempotencyKey);
@@ -33,6 +37,14 @@ export default {
           ipHash,
         },
       );
+      try {
+        const brevo = await syncQuestionnaireContact(submission);
+        if (brevo.reason === 'not-configured' && process.env.NODE_ENV === 'production') {
+          console.warn('[zac-brevo] BREVO_API_KEY non configurata.');
+        }
+      } catch (brevoError) {
+        console.error('[zac-brevo]', brevoError?.message || 'Sincronizzazione non riuscita.');
+      }
       return json({
         ok: true,
         result: {
@@ -43,6 +55,7 @@ export default {
         program: {
           available,
           downloadUrl: available ? '/api/program' : null,
+          variant: programVariant,
         },
       }, 201, { 'set-cookie': createDownloadSession(request, deliveryToken) });
     } catch (error) {
