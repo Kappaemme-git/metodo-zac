@@ -58,3 +58,21 @@ test('Supabase lead listing keeps the newest submission for a repeated email', a
   assert.equal(leads[0].score, newest.score);
   assert.equal(leads[0].level, newest.level);
 });
+
+test('Supabase prepara gli upload PDF sull’endpoint TUS firmato', async () => {
+  const repository = new SupabaseRepository('https://project-ref.supabase.co', 'test-key');
+  repository.supabase = {
+    storage: {
+      from: () => ({
+        createSignedUploadUrl: async () => ({ data: { token: 'signed-token' }, error: null }),
+      }),
+    },
+  };
+
+  const upload = await repository.createProgramUpload('programma elaborato.pdf');
+
+  assert.equal(upload.mode, 'resumable');
+  assert.equal(upload.endpoint, 'https://project-ref.storage.supabase.co/storage/v1/upload/resumable/sign');
+  assert.equal(upload.token, 'signed-token');
+  assert.match(upload.path, /^programs\/[0-9a-f-]{36}\/programma-elaborato\.pdf$/);
+});

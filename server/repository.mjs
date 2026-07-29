@@ -402,7 +402,7 @@ export class SupabaseRepository {
     const projectRef = new URL(this.url).hostname.split('.')[0];
     return {
       mode: 'resumable',
-      endpoint: `https://${projectRef}.storage.supabase.co/storage/v1/upload/resumable`,
+      endpoint: `https://${projectRef}.storage.supabase.co/storage/v1/upload/resumable/sign`,
       token: data.token,
       path,
       filename: safeName,
