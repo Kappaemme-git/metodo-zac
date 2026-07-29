@@ -8,9 +8,11 @@
    ricalcola punteggio, livello e profilo.
 4. Il server salva una submission idempotente e autorizza quel browser tramite
    un cookie `HttpOnly`.
-5. Il download richiede quel cookie e genera un link Supabase firmato di 10 minuti.
+5. Se il consenso marketing è stato accettato, il contatto viene sincronizzato
+   con Brevo nella lista coerente con il livello calcolato.
+6. Il download richiede quel cookie e genera un link Supabase firmato di 10 minuti.
    Copiare il collegamento su un altro dispositivo riporta al questionario.
-6. Luigi gestisce contatti e PDF da `/admin.html`.
+7. Luigi gestisce contatti e PDF da `/admin.html`.
 
 ## Esecuzione locale
 
@@ -47,6 +49,22 @@ repo in Vercel e configura le variabili presenti in `.env.example`:
 - `DOWNLOAD_TOKEN_SECRET`
 - `IP_HASH_SECRET`
 - `SITE_ORIGIN`
+- `BREVO_API_KEY`
+
+Le liste Brevo attualmente collegate sono:
+
+- `Principiante` → lista `3`
+- `Intermedio` → lista `4`
+- `Avanzato` → lista `5`
+
+Gli ID possono essere modificati senza cambiare il codice tramite
+`BREVO_LIST_PRINCIPIANTE_ID`, `BREVO_LIST_INTERMEDIO_ID` e
+`BREVO_LIST_AVANZATO_ID`.
+
+Per ogni contatto vengono aggiornati `NOME`, `COGNOME`, `LIVELLO_ZAC`,
+`PUNTEGGIO_ZAC` e `OBIETTIVO_ZAC`. Se il livello cambia, il contatto viene
+rimosso dalle altre due liste ZAC. Un errore temporaneo di Brevo non blocca né
+il risultato né il download del PDF.
 
 Tutti i segreti devono essere lunghi, casuali e diversi. Dopo il deploy:
 
@@ -72,7 +90,7 @@ limit = 50 MB`: il limite globale deve essere almeno uguale a quello del bucket
 - Completare e approvare `privacy.html`, soprattutto email del titolare e tempi
   definitivi di conservazione.
 - Caricare il PDF definitivo.
-- Scegliere se attivare Brevo e preparare un consenso marketing separato.
+- Preparare e approvare le tre automazioni email Brevo prima di attivarle.
 - Impostare dominio, mittente email, ambiente di produzione e account di proprietà
   di Luigi.
 - Eseguire un test end-to-end con soli dati sintetici.
@@ -94,7 +112,8 @@ limit = 50 MB`: il limite globale deve essere almeno uguale a quello del bucket
 
 ## Non incluso
 
-- Invio email/Brevo: richiede dominio mittente e account di Luigi.
+- Contenuto e attivazione delle automazioni email Brevo: richiedono
+  l’approvazione di Luigi e, per il go-live, un dominio mittente autenticato.
 - Recupero password o più amministratori.
 - Editor visuale delle domande: le domande v1 restano versionate nel codice.
 - Consulenza legale: la privacy è una bozza tecnica da validare.

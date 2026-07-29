@@ -2,6 +2,7 @@ import { getRepository } from '../server/repository.mjs';
 import { handleError, json, methodNotAllowed, readJson } from '../server/http.mjs';
 import { validateQuestionnaire, ValidationError } from '../server/questionnaire.mjs';
 import { createDownloadSession, downloadTokenFor, hashIp, sha256 } from '../server/security.mjs';
+import { syncQuestionnaireContact } from '../server/brevo.mjs';
 
 export default {
   async fetch(request) {
@@ -33,6 +34,14 @@ export default {
           ipHash,
         },
       );
+      try {
+        const brevo = await syncQuestionnaireContact(submission);
+        if (brevo.reason === 'not-configured' && process.env.NODE_ENV === 'production') {
+          console.warn('[zac-brevo] BREVO_API_KEY non configurata.');
+        }
+      } catch (brevoError) {
+        console.error('[zac-brevo]', brevoError?.message || 'Sincronizzazione non riuscita.');
+      }
       return json({
         ok: true,
         result: {
