@@ -69,10 +69,11 @@ test('Supabase prepara gli upload PDF sull’endpoint TUS firmato', async () => 
     },
   };
 
-  const upload = await repository.createProgramUpload('programma elaborato.pdf');
+  const upload = await repository.createProgramUpload('programma elaborato.pdf', 'donna');
 
   assert.equal(upload.mode, 'resumable');
   assert.equal(upload.endpoint, 'https://project-ref.storage.supabase.co/storage/v1/upload/resumable/sign');
   assert.equal(upload.token, 'signed-token');
-  assert.match(upload.path, /^programs\/[0-9a-f-]{36}\/programma-elaborato\.pdf$/);
+  assert.equal(upload.variant, 'donna');
+  assert.match(upload.path, /^programs\/donna\/[0-9a-f-]{36}\/programma-elaborato\.pdf$/);
 });

@@ -9,15 +9,17 @@ test('il ticket di upload PDF è firmato e non può essere modificato dal browse
   process.env.ADMIN_SESSION_SECRET = 'test-session-secret-with-more-than-32-characters';
   try {
     const ticket = createProgramUploadTicket({
-      path: 'programs/123e4567-e89b-12d3-a456-426614174000/programma.pdf',
+      path: 'programs/donna/123e4567-e89b-12d3-a456-426614174000/programma.pdf',
       filename: 'programma.pdf',
       size: 45 * 1024 * 1024,
+      variant: 'donna',
     });
     assert.deepEqual(verifyProgramUploadTicket(ticket), {
       scope: 'program-upload',
-      path: 'programs/123e4567-e89b-12d3-a456-426614174000/programma.pdf',
+      path: 'programs/donna/123e4567-e89b-12d3-a456-426614174000/programma.pdf',
       filename: 'programma.pdf',
       size: 45 * 1024 * 1024,
+      variant: 'donna',
       exp: verifyProgramUploadTicket(ticket).exp,
     });
     const tampered = `${ticket.slice(0, -1)}${ticket.endsWith('a') ? 'b' : 'a'}`;

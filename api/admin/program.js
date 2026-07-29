@@ -6,6 +6,7 @@ import {
   verifyProgramUploadTicket,
 } from '../../server/security.mjs';
 import { ValidationError } from '../../server/questionnaire.mjs';
+import { isProgramVariant, PROGRAM_VARIANTS } from '../../server/programs.mjs';
 
 const MAX_PDF_BYTES = 50 * 1024 * 1024;
 const LEGACY_PROXY_MAX_BYTES = 4 * 1024 * 1024;
@@ -16,20 +17,22 @@ export default {
     try {
       const repository = getRepository();
       if (request.method === 'GET') {
-        const program = await repository.getProgram();
-        return json({ ok: true, program: publicProgram(program) });
+        const programs = await repository.getPrograms();
+        return json({ ok: true, programs: publicPrograms(programs) });
       }
       if (request.method === 'POST') {
         const body = await readJson(request, 8 * 1024);
         const upload = validateUploadRequest(body);
+        const variant = validateVariant(body.variant);
         if (typeof repository.createProgramUpload !== 'function') {
-          return json({ ok: true, upload: { mode: 'proxy' } });
+          return json({ ok: true, upload: { mode: 'proxy', variant } });
         }
-        const prepared = await repository.createProgramUpload(upload.filename);
+        const prepared = await repository.createProgramUpload(upload.filename, variant);
         const ticket = createProgramUploadTicket({
           path: prepared.path,
           filename: prepared.filename,
           size: upload.size,
+          variant,
         });
         return json({
           ok: true,
@@ -39,10 +42,12 @@ export default {
             token: prepared.token,
             path: prepared.path,
             ticket,
+            variant,
           },
         });
       }
       if (request.method === 'PUT') {
+        const variant = validateVariant(request.headers.get('x-program-variant'));
         const contentType = request.headers.get('content-type') || '';
         const contentLength = Number(request.headers.get('content-length') || 0);
         if (!contentType.includes('application/pdf')) throw new ValidationError('Seleziona un file PDF.');
@@ -51,12 +56,13 @@ export default {
         if (!buffer.length || buffer.length > LEGACY_PROXY_MAX_BYTES) throw new ValidationError('Usa il caricamento diretto per PDF oltre 4 MB.');
         if (buffer.subarray(0, 5).toString('ascii') !== '%PDF-') throw new ValidationError('Il file non sembra essere un PDF valido.');
         const filename = decodeURIComponent(request.headers.get('x-file-name') || 'programma-metodo-zac.pdf');
-        const program = await repository.saveProgram(buffer, filename);
-        return json({ ok: true, program: publicProgram(program), message: 'PDF caricato e pubblicato.' });
+        const program = await repository.saveProgram(buffer, filename, variant);
+        return json({ ok: true, variant, program: publicProgram(program), message: 'PDF caricato e pubblicato.' });
       }
       if (request.method === 'DELETE') {
-        const program = await repository.deleteProgram();
-        return json({ ok: true, program: publicProgram(program), message: 'PDF rimosso.' });
+        const variant = validateVariant(new URL(request.url).searchParams.get('variant'));
+        const program = await repository.deleteProgram(variant);
+        return json({ ok: true, variant, program: publicProgram(program), message: 'PDF rimosso.' });
       }
       if (request.method === 'PATCH') {
         const body = await readJson(request, 4 * 1024);
@@ -67,7 +73,12 @@ export default {
           const ticket = verifyProgramUploadTicket(body.ticket);
           if (!ticket) throw new ValidationError('Caricamento scaduto. Seleziona nuovamente il PDF.');
           const program = await repository.finalizeProgramUpload(ticket);
-          return json({ ok: true, program: publicProgram(program), message: 'PDF caricato e pubblicato.' });
+          return json({
+            ok: true,
+            variant: ticket.variant,
+            program: publicProgram(program),
+            message: 'PDF caricato e pubblicato.',
+          });
         }
         if (body.action === 'abort-upload') {
           if (typeof repository.abortProgramUpload !== 'function') {
@@ -79,8 +90,9 @@ export default {
           return json({ ok: true });
         }
         if (typeof body.active !== 'boolean') throw new ValidationError('Stato non valido.');
-        const program = await repository.setProgramActive(body.active);
-        return json({ ok: true, program: publicProgram(program) });
+        const variant = validateVariant(body.variant);
+        const program = await repository.setProgramActive(body.active, variant);
+        return json({ ok: true, variant, program: publicProgram(program) });
       }
       return methodNotAllowed(['GET', 'POST', 'PUT', 'DELETE', 'PATCH']);
     } catch (error) {
@@ -96,6 +108,19 @@ function publicProgram(program) {
     uploadedAt: program?.uploadedAt || null,
     ready: Boolean(program?.path),
   };
+}
+
+function publicPrograms(programs) {
+  return Object.fromEntries(PROGRAM_VARIANTS.map((variant) => [
+    variant,
+    publicProgram(programs?.[variant]),
+  ]));
+}
+
+function validateVariant(value) {
+  const variant = String(value || 'uomo').toLowerCase();
+  if (!isProgramVariant(variant)) throw new ValidationError('Versione del programma non valida.');
+  return variant;
 }
 
 function validateUploadRequest(body) {

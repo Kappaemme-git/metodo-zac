@@ -47,7 +47,7 @@ test('il questionario resta chiuso finché il PDF non è pubblicato', async () =
       }),
     }));
     assert.equal(response.status, 425);
-    assert.equal((await response.json()).error, 'Il programma non è ancora disponibile.');
+    assert.equal((await response.json()).error, 'Il programma Uomo non è ancora disponibile.');
   } finally {
     resetRepositoryForTests();
     delete process.env.ZAC_STORE_PATH;
@@ -98,10 +98,27 @@ test('flusso completo: login, upload privato, questionario e download', async ()
 
     const uploaded = await programAdminApi.fetch(new Request('http://localhost/api/admin/program', {
       method: 'PUT',
-      headers: { cookie: adminCookie, 'content-type': 'application/pdf', 'x-file-name': encodeURIComponent('programma-test.pdf') },
-      body: Buffer.from('%PDF-1.4\n% Metodo ZAC test\n'),
+      headers: {
+        cookie: adminCookie,
+        'content-type': 'application/pdf',
+        'x-file-name': encodeURIComponent('programma-uomo.pdf'),
+        'x-program-variant': 'uomo',
+      },
+      body: Buffer.from('%PDF-1.4\n% Programma Uomo\n'),
     }));
     assert.equal(uploaded.status, 200);
+
+    const uploadedDonna = await programAdminApi.fetch(new Request('http://localhost/api/admin/program', {
+      method: 'PUT',
+      headers: {
+        cookie: adminCookie,
+        'content-type': 'application/pdf',
+        'x-file-name': encodeURIComponent('programma-donna.pdf'),
+        'x-program-variant': 'donna',
+      },
+      body: Buffer.from('%PDF-1.4\n% Programma Donna\n'),
+    }));
+    assert.equal(uploadedDonna.status, 200);
 
     const body = {
       idempotencyKey: 'test-session-key-1234567890', questionnaireVersion: QUESTIONNAIRE_VERSION,
@@ -119,6 +136,7 @@ test('flusso completo: login, upload privato, questionario e download', async ()
     assert.equal(result.ok, true);
     assert.equal(result.program.available, true);
     assert.equal(result.program.downloadUrl, '/api/program');
+    assert.equal(result.program.variant, 'uomo');
     const downloadCookie = submitted.headers.get('set-cookie').split(';')[0];
     assert.match(downloadCookie, /^zac_download=/);
 
@@ -131,9 +149,42 @@ test('flusso completo: login, upload privato, questionario e download', async ()
     }));
     assert.equal(downloaded.status, 200);
     assert.equal(downloaded.headers.get('content-type'), 'application/pdf');
-    assert.match(Buffer.from(await downloaded.arrayBuffer()).toString(), /^%PDF-/);
+    assert.match(Buffer.from(await downloaded.arrayBuffer()).toString(), /Programma Uomo/);
 
-    const deleted = await programAdminApi.fetch(new Request('http://localhost/api/admin/program', {
+    const donnaBody = {
+      ...body,
+      idempotencyKey: 'test-session-key-donna-1234567',
+      email: 'maria@example.com',
+      firstName: 'Maria',
+      gender: 'Donna',
+    };
+    const donnaSubmitted = await questionnaireApi.fetch(new Request('http://localhost/api/questionnaire', {
+      method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(donnaBody),
+    }));
+    assert.equal(donnaSubmitted.status, 201);
+    assert.equal((await donnaSubmitted.clone().json()).program.variant, 'donna');
+    const donnaDownload = await programApi.fetch(new Request('http://localhost/api/program', {
+      headers: { cookie: donnaSubmitted.headers.get('set-cookie').split(';')[0] },
+    }));
+    assert.match(Buffer.from(await donnaDownload.arrayBuffer()).toString(), /Programma Donna/);
+
+    const privateBody = {
+      ...body,
+      idempotencyKey: 'test-session-key-private-12345',
+      email: 'private@example.com',
+      gender: 'Preferisco non dirlo',
+    };
+    const privateSubmitted = await questionnaireApi.fetch(new Request('http://localhost/api/questionnaire', {
+      method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(privateBody),
+    }));
+    assert.equal(privateSubmitted.status, 201);
+    assert.equal((await privateSubmitted.clone().json()).program.variant, 'uomo');
+    const privateDownload = await programApi.fetch(new Request('http://localhost/api/program', {
+      headers: { cookie: privateSubmitted.headers.get('set-cookie').split(';')[0] },
+    }));
+    assert.match(Buffer.from(await privateDownload.arrayBuffer()).toString(), /Programma Uomo/);
+
+    const deleted = await programAdminApi.fetch(new Request('http://localhost/api/admin/program?variant=donna', {
       method: 'DELETE',
       headers: { cookie: adminCookie },
     }));
@@ -150,7 +201,9 @@ test('flusso completo: login, upload privato, questionario e download', async ()
       headers: { cookie: adminCookie },
     }));
     assert.equal(afterDelete.status, 200);
-    assert.equal((await afterDelete.json()).program.ready, false);
+    const programs = (await afterDelete.json()).programs;
+    assert.equal(programs.uomo.ready, true);
+    assert.equal(programs.donna.ready, false);
   } finally {
     resetRepositoryForTests();
     await rm(dir, { recursive: true, force: true });

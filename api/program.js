@@ -2,6 +2,7 @@ import { readFile } from 'node:fs/promises';
 import { getRepository } from '../server/repository.mjs';
 import { handleError, json, methodNotAllowed } from '../server/http.mjs';
 import { downloadTokenFromRequest, sha256 } from '../server/security.mjs';
+import { programVariantForGender } from '../server/programs.mjs';
 
 export default {
   async fetch(request) {
@@ -12,7 +13,8 @@ export default {
       const repository = getRepository();
       const submission = await repository.findSubmissionByTokenHash(sha256(token));
       if (!submission) return questionnaireRedirect(request);
-      const asset = await repository.resolveProgramDownload();
+      const programVariant = programVariantForGender(submission.gender);
+      const asset = await repository.resolveProgramDownload(programVariant);
       if (!asset) return json({ ok: false, error: 'Il programma non è ancora disponibile.' }, 425);
       if (asset.kind === 'redirect') return Response.redirect(asset.url, 302);
       const file = await readFile(asset.path);

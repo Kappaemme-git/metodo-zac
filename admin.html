@@ -82,22 +82,57 @@
       </section>
 
       <section id="program" class="dashboard-section">
-        <div class="section-title"><div><p class="section-index">03 / Programma</p></div><p>Il PDF viene consegnato solo dopo il completamento del questionario.</p></div>
+        <div class="section-title">
+          <div><p class="section-index">03 / Programmi</p></div>
+          <p>Il genere indicato nel questionario determina il PDF consegnato. “Preferisco non dirlo” riceve la versione Uomo.</p>
+        </div>
         <div class="program-layout">
-          <form class="upload-panel" id="uploadForm">
-            <div class="program-file-bar" id="programFileBar" hidden>
+          <form class="upload-panel program-card" data-program-variant="uomo" aria-labelledby="programTitleUomo">
+            <header class="program-card-head">
+              <span class="program-card-index" aria-hidden="true">01</span>
+              <div>
+                <small>Uomo + preferisco non dirlo</small>
+                <h3 id="programTitleUomo">PDF Uomo</h3>
+              </div>
+              <span class="program-ready-badge" data-role="program-status">Da caricare</span>
+            </header>
+            <div class="program-file-bar" data-role="program-file-bar" hidden>
               <span class="program-file-icon" aria-hidden="true">PDF</span>
-              <span class="program-file-copy"><small>Programma attuale</small><strong id="currentProgramName"></strong></span>
-              <button class="remove-program-button" id="removeProgramButton" type="button">Rimuovi PDF</button>
+              <span class="program-file-copy"><small>File attuale</small><strong data-role="current-program-name"></strong></span>
+              <button class="remove-program-button" data-role="remove-program" type="button">Rimuovi PDF</button>
             </div>
-            <label class="drop-zone" id="dropZone">
-              <input id="pdfInput" type="file" accept="application/pdf,.pdf" />
+            <label class="drop-zone" data-role="drop-zone">
+              <input data-role="pdf-input" type="file" accept="application/pdf,.pdf" />
               <span class="upload-icon">↑</span>
-              <strong>Carica il programma PDF</strong>
-              <small id="fileHint">Trascina qui o scegli un file · massimo 50 MB</small>
+              <strong>Carica PDF Uomo</strong>
+              <small data-role="file-hint">Trascina qui o scegli un file · massimo 50 MB</small>
             </label>
-            <button class="primary-button" id="uploadButton" type="submit" disabled>Carica il programma <span>→</span></button>
-            <p class="form-message" id="uploadMessage" role="status" aria-live="polite"></p>
+            <button class="primary-button" data-role="upload-button" type="submit" disabled>Carica PDF Uomo <span>→</span></button>
+            <p class="form-message" data-role="upload-message" role="status" aria-live="polite"></p>
+          </form>
+
+          <form class="upload-panel program-card" data-program-variant="donna" aria-labelledby="programTitleDonna">
+            <header class="program-card-head">
+              <span class="program-card-index" aria-hidden="true">02</span>
+              <div>
+                <small>Donna</small>
+                <h3 id="programTitleDonna">PDF Donna</h3>
+              </div>
+              <span class="program-ready-badge" data-role="program-status">Da caricare</span>
+            </header>
+            <div class="program-file-bar" data-role="program-file-bar" hidden>
+              <span class="program-file-icon" aria-hidden="true">PDF</span>
+              <span class="program-file-copy"><small>File attuale</small><strong data-role="current-program-name"></strong></span>
+              <button class="remove-program-button" data-role="remove-program" type="button">Rimuovi PDF</button>
+            </div>
+            <label class="drop-zone" data-role="drop-zone">
+              <input data-role="pdf-input" type="file" accept="application/pdf,.pdf" />
+              <span class="upload-icon">↑</span>
+              <strong>Carica PDF Donna</strong>
+              <small data-role="file-hint">Trascina qui o scegli un file · massimo 50 MB</small>
+            </label>
+            <button class="primary-button" data-role="upload-button" type="submit" disabled>Carica PDF Donna <span>→</span></button>
+            <p class="form-message" data-role="upload-message" role="status" aria-live="polite"></p>
           </form>
         </div>
       </section>

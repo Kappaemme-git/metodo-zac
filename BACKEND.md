@@ -3,16 +3,19 @@
 ## Flusso implementato
 
 1. La home porta direttamente al questionario per sbloccare il programma.
-2. Il questionario è utilizzabile soltanto quando un PDF è stato caricato.
+2. Il questionario è utilizzabile quando almeno una versione del programma è
+   stata caricata.
 3. Il browser invia risposte e consensi; il server valida le opzioni e
    ricalcola punteggio, livello e profilo.
 4. Il server salva una submission idempotente e autorizza quel browser tramite
    un cookie `HttpOnly`.
 5. Se il consenso marketing è stato accettato, il contatto viene sincronizzato
    con Brevo nella lista coerente con il livello calcolato.
-6. Il download richiede quel cookie e genera un link Supabase firmato di 10 minuti.
+6. Il download richiede quel cookie, sceglie il programma dal genere salvato e
+   genera un link Supabase firmato di 10 minuti. `Donna` riceve il PDF Donna;
+   `Uomo` e `Preferisco non dirlo` ricevono il PDF Uomo.
    Copiare il collegamento su un altro dispositivo riporta al questionario.
-7. Luigi gestisce contatti e PDF da `/admin.html`.
+7. Luigi gestisce contatti e i due PDF separati da `/admin.html`.
 
 ## Esecuzione locale
 
@@ -71,11 +74,11 @@ Tutti i segreti devono essere lunghi, casuali e diversi. Dopo il deploy:
 1. visita `/api/config` e verifica `ok: true`;
 2. apri il questionario dalla home;
 3. accedi a `/admin.html`;
-4. carica un PDF di prova fino a 50 MB;
-5. compila il questionario e verifica il download;
+4. carica i PDF Uomo e Donna, fino a 50 MB ciascuno;
+5. compila il questionario con tutte le opzioni di genere e verifica i download;
 6. cancella i dati sintetici prima del lancio.
 
-I PDF vengono inviati direttamente dal browser allo Storage privato di Supabase
+I due PDF vengono inviati direttamente dal browser allo Storage privato di Supabase
 con un’autorizzazione temporanea creata dal backend. Il caricamento è suddiviso
 in blocchi da 6 MB, mostra l’avanzamento e riprende automaticamente dopo brevi
 interruzioni di rete. Il limite applicativo e del bucket è 50 MB.
@@ -89,7 +92,7 @@ limit = 50 MB`: il limite globale deve essere almeno uguale a quello del bucket
 - Approvare il testo e il punteggio delle domande con Luigi.
 - Completare e approvare `privacy.html`, soprattutto email del titolare e tempi
   definitivi di conservazione.
-- Caricare il PDF definitivo.
+- Caricare entrambi i PDF definitivi.
 - Preparare e approvare le tre automazioni email Brevo prima di attivarle.
 - Impostare dominio, mittente email, ambiente di produzione e account di proprietà
   di Luigi.

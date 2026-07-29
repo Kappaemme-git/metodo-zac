@@ -1,16 +1,24 @@
 import { mkdir, readFile, rename, unlink, writeFile } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { createClient } from '@supabase/supabase-js';
+import { PROGRAM_VARIANT_IDS, PROGRAM_VARIANTS } from './programs.mjs';
 
-const EMPTY_STORE = {
-  waitlist: [],
-  submissions: [],
-  program: {
+function emptyProgram() {
+  return {
     active: false,
     filename: null,
     path: null,
     uploadedAt: null,
     updatedAt: null,
+  };
+}
+
+const EMPTY_STORE = {
+  waitlist: [],
+  submissions: [],
+  programs: {
+    uomo: emptyProgram(),
+    donna: emptyProgram(),
   },
 };
 
@@ -27,7 +35,18 @@ function publicSubmission(row) {
   return safe;
 }
 
-function computeStats(waitlist, submissions, program) {
+function publicPrograms(programs) {
+  return Object.fromEntries(PROGRAM_VARIANTS.map((variant) => {
+    const program = programs?.[variant] || emptyProgram();
+    return [variant, {
+      active: Boolean(program.active),
+      filename: program.filename || null,
+      uploadedAt: program.uploadedAt || null,
+    }];
+  }));
+}
+
+function computeStats(waitlist, submissions, programs) {
   const today = Date.now();
   const recentCutoff = today - 7 * 24 * 60 * 60 * 1000;
   const byLevel = { Principiante: 0, Intermedio: 0, Avanzato: 0 };
@@ -46,11 +65,7 @@ function computeStats(waitlist, submissions, program) {
     marketingConsents: [...waitlist, ...submissions].filter((item) => item.marketingConsent).length,
     byLevel,
     goals: Object.entries(goals).sort((a, b) => b[1] - a[1]).slice(0, 6).map(([label, value]) => ({ label, value })),
-    program: {
-      active: Boolean(program?.active),
-      filename: program?.filename || null,
-      uploadedAt: program?.uploadedAt || null,
-    },
+    programs: publicPrograms(programs),
   };
 }
 
@@ -110,7 +125,16 @@ export class FileRepository {
 
   async read() {
     try {
-      return { ...structuredClone(EMPTY_STORE), ...JSON.parse(await readFile(this.filePath, 'utf8')) };
+      const stored = JSON.parse(await readFile(this.filePath, 'utf8'));
+      const { program: legacyProgram, ...currentStore } = stored;
+      return {
+        ...structuredClone(EMPTY_STORE),
+        ...currentStore,
+        programs: {
+          uomo: stored.programs?.uomo || legacyProgram || emptyProgram(),
+          donna: stored.programs?.donna || emptyProgram(),
+        },
+      };
     } catch (error) {
       if (error.code !== 'ENOENT') throw error;
       await this.write(structuredClone(EMPTY_STORE));
@@ -187,23 +211,28 @@ export class FileRepository {
 
   async stats() {
     const data = await this.read();
-    return computeStats(data.waitlist, data.submissions, data.program);
+    return computeStats(data.waitlist, data.submissions, data.programs);
   }
 
-  async getProgram() {
+  async getPrograms() {
     const data = await this.read();
-    return data.program;
+    return data.programs;
   }
 
-  async saveProgram(buffer, filename) {
+  async getProgram(variant = 'uomo') {
+    const programs = await this.getPrograms();
+    return programs[variant] || emptyProgram();
+  }
+
+  async saveProgram(buffer, filename, variant = 'uomo') {
     await mkdir(this.programDir, { recursive: true });
     const safeName = filename.replace(/[^a-zA-Z0-9._-]+/g, '-').replace(/^-+|-+$/g, '') || 'programma.pdf';
-    const storedName = `${Date.now()}-${safeName}`;
+    const storedName = `${variant}-${Date.now()}-${safeName}`;
     const path = join(this.programDir, storedName);
     await writeFile(path, buffer, { mode: 0o600 });
     const data = await this.read();
-    const previousPath = data.program.path;
-    data.program = {
+    const previousPath = data.programs[variant]?.path;
+    data.programs[variant] = {
       active: true,
       filename: safeName,
       path,
@@ -216,14 +245,14 @@ export class FileRepository {
         if (error.code !== 'ENOENT') console.error('[zac-program-cleanup]', error.message);
       });
     }
-    return data.program;
+    return data.programs[variant];
   }
 
-  async deleteProgram() {
+  async deleteProgram(variant = 'uomo') {
     const data = await this.read();
-    const previousPath = data.program.path;
-    data.program = {
-      ...structuredClone(EMPTY_STORE.program),
+    const previousPath = data.programs[variant]?.path;
+    data.programs[variant] = {
+      ...emptyProgram(),
       updatedAt: isoNow(),
     };
     await this.write(data);
@@ -232,20 +261,20 @@ export class FileRepository {
         if (error.code !== 'ENOENT') console.error('[zac-program-cleanup]', error.message);
       });
     }
-    return data.program;
+    return data.programs[variant];
   }
 
-  async setProgramActive(active) {
+  async setProgramActive(active, variant = 'uomo') {
     const data = await this.read();
-    if (active && !data.program.path) throw new Error('Carica prima un PDF.');
-    data.program.active = Boolean(active);
-    data.program.updatedAt = isoNow();
+    if (active && !data.programs[variant]?.path) throw new Error('Carica prima un PDF.');
+    data.programs[variant].active = Boolean(active);
+    data.programs[variant].updatedAt = isoNow();
     await this.write(data);
-    return data.program;
+    return data.programs[variant];
   }
 
-  async resolveProgramDownload() {
-    const program = await this.getProgram();
+  async resolveProgramDownload(variant = 'uomo') {
+    const program = await this.getProgram(variant);
     if (!program.active || !program.path) return null;
     return { kind: 'file', path: program.path, filename: program.filename };
   }
@@ -338,16 +367,16 @@ export class SupabaseRepository {
   }
 
   async rawData() {
-    const [waitlist, submissions, program] = await Promise.all([
+    const [waitlist, submissions, programs] = await Promise.all([
       this.supabase.from('waitlist_signups').select('*').order('created_at', { ascending: false }).limit(500),
       this.supabase.from('questionnaire_submissions').select('*').order('created_at', { ascending: false }).limit(500),
-      this.supabase.from('program_config').select('*').eq('id', 1).maybeSingle(),
+      this.supabase.from('program_config').select('*').in('id', Object.values(PROGRAM_VARIANT_IDS)),
     ]);
-    for (const result of [waitlist, submissions, program]) if (result.error) throw result.error;
+    for (const result of [waitlist, submissions, programs]) if (result.error) throw result.error;
     return {
       waitlist: waitlist.data.map(fromDbWaitlist),
       submissions: submissions.data.map(fromDbSubmission),
-      program: fromDbProgram(program.data),
+      programs: programsFromRows(programs.data),
     };
   }
 
@@ -358,25 +387,36 @@ export class SupabaseRepository {
 
   async stats() {
     const data = await this.rawData();
-    return computeStats(data.waitlist, data.submissions, data.program);
+    return computeStats(data.waitlist, data.submissions, data.programs);
   }
 
-  async getProgram() {
-    const { data, error } = await this.supabase.from('program_config').select('*').eq('id', 1).maybeSingle();
+  async getPrograms() {
+    const { data, error } = await this.supabase.from('program_config')
+      .select('*')
+      .in('id', Object.values(PROGRAM_VARIANT_IDS));
+    if (error) throw error;
+    return programsFromRows(data);
+  }
+
+  async getProgram(variant = 'uomo') {
+    const { data, error } = await this.supabase.from('program_config')
+      .select('*')
+      .eq('id', PROGRAM_VARIANT_IDS[variant])
+      .maybeSingle();
     if (error) throw error;
     return fromDbProgram(data);
   }
 
-  async saveProgram(buffer, filename) {
-    const current = await this.getProgram();
+  async saveProgram(buffer, filename, variant = 'uomo') {
+    const current = await this.getProgram(variant);
     const safeName = filename.replace(/[^a-zA-Z0-9._-]+/g, '-').replace(/^-+|-+$/g, '') || 'programma.pdf';
-    const path = `${new Date().toISOString().slice(0, 10)}/${crypto.randomUUID()}-${safeName}`;
+    const path = `${variant}/${new Date().toISOString().slice(0, 10)}/${crypto.randomUUID()}-${safeName}`;
     const uploaded = await this.supabase.storage.from('lead-magnets').upload(path, buffer, {
       contentType: 'application/pdf', cacheControl: '3600', upsert: false,
     });
     if (uploaded.error) throw uploaded.error;
     const row = {
-      id: 1,
+      id: PROGRAM_VARIANT_IDS[variant],
       active: true,
       filename: safeName,
       storage_bucket: 'lead-magnets',
@@ -393,9 +433,9 @@ export class SupabaseRepository {
     return fromDbProgram(saved.data);
   }
 
-  async createProgramUpload(filename) {
+  async createProgramUpload(filename, variant = 'uomo') {
     const safeName = sanitizeProgramFilename(filename);
-    const path = `programs/${crypto.randomUUID()}/${safeName}`;
+    const path = `programs/${variant}/${crypto.randomUUID()}/${safeName}`;
     const { data, error } = await this.supabase.storage.from('lead-magnets')
       .createSignedUploadUrl(path, { upsert: false });
     if (error) throw error;
@@ -406,11 +446,12 @@ export class SupabaseRepository {
       token: data.token,
       path,
       filename: safeName,
+      variant,
     };
   }
 
-  async finalizeProgramUpload({ path, filename, size }) {
-    validateProgramUploadPath(path, filename);
+  async finalizeProgramUpload({ path, filename, size, variant = 'uomo' }) {
+    validateProgramUploadPath(path, filename, variant);
     const folder = path.slice(0, path.lastIndexOf('/'));
     const listed = await this.supabase.storage.from('lead-magnets')
       .list(folder, { limit: 10, search: filename });
@@ -423,9 +464,9 @@ export class SupabaseRepository {
       throw new Error('La dimensione del PDF caricato non corrisponde.');
     }
 
-    const current = await this.getProgram();
+    const current = await this.getProgram(variant);
     const row = {
-      id: 1,
+      id: PROGRAM_VARIANT_IDS[variant],
       active: true,
       filename,
       storage_bucket: 'lead-magnets',
@@ -442,14 +483,14 @@ export class SupabaseRepository {
     return fromDbProgram(saved.data);
   }
 
-  async abortProgramUpload({ path, filename }) {
-    validateProgramUploadPath(path, filename);
+  async abortProgramUpload({ path, filename, variant = 'uomo' }) {
+    validateProgramUploadPath(path, filename, variant);
     const removed = await this.supabase.storage.from('lead-magnets').remove([path]);
     if (removed.error) throw removed.error;
   }
 
-  async deleteProgram() {
-    const current = await this.getProgram();
+  async deleteProgram(variant = 'uomo') {
+    const current = await this.getProgram(variant);
     const { data, error } = await this.supabase.from('program_config')
       .update({
         active: false,
@@ -459,7 +500,7 @@ export class SupabaseRepository {
         uploaded_at: null,
         updated_at: isoNow(),
       })
-      .eq('id', 1)
+      .eq('id', PROGRAM_VARIANT_IDS[variant])
       .select()
       .single();
     if (error) throw error;
@@ -470,17 +511,20 @@ export class SupabaseRepository {
     return fromDbProgram(data);
   }
 
-  async setProgramActive(active) {
-    const current = await this.getProgram();
+  async setProgramActive(active, variant = 'uomo') {
+    const current = await this.getProgram(variant);
     if (active && !current.path) throw new Error('Carica prima un PDF.');
     const { data, error } = await this.supabase.from('program_config')
-      .update({ active: Boolean(active), updated_at: isoNow() }).eq('id', 1).select().single();
+      .update({ active: Boolean(active), updated_at: isoNow() })
+      .eq('id', PROGRAM_VARIANT_IDS[variant])
+      .select()
+      .single();
     if (error) throw error;
     return fromDbProgram(data);
   }
 
-  async resolveProgramDownload() {
-    const program = await this.getProgram();
+  async resolveProgramDownload(variant = 'uomo') {
+    const program = await this.getProgram(variant);
     if (!program.active || !program.path) return null;
     const { data, error } = await this.supabase.storage.from(program.bucket || 'lead-magnets')
       .createSignedUrl(program.path, 10 * 60, { download: program.filename });
@@ -534,7 +578,7 @@ function fromDbSubmission(row) {
 }
 
 function fromDbProgram(row) {
-  if (!row) return structuredClone(EMPTY_STORE.program);
+  if (!row) return emptyProgram();
   return {
     active: row.active,
     filename: row.filename,
@@ -545,14 +589,24 @@ function fromDbProgram(row) {
   };
 }
 
+function programsFromRows(rows = []) {
+  return Object.fromEntries(PROGRAM_VARIANTS.map((variant) => {
+    const row = rows.find((item) => item.id === PROGRAM_VARIANT_IDS[variant]);
+    return [variant, fromDbProgram(row)];
+  }));
+}
+
 function sanitizeProgramFilename(filename) {
   const safeName = String(filename || '').replace(/[^a-zA-Z0-9._-]+/g, '-').replace(/^-+|-+$/g, '');
   return safeName && safeName.toLowerCase().endsWith('.pdf') ? safeName : 'programma-metodo-zac.pdf';
 }
 
-function validateProgramUploadPath(path, filename) {
-  const expectedPath = `programs/${String(path || '').split('/')[1]}/${filename}`;
-  if (path !== expectedPath || !/^programs\/[0-9a-f-]{36}\/[a-zA-Z0-9._-]+\.pdf$/i.test(path)) {
+function validateProgramUploadPath(path, filename, variant) {
+  const expectedPath = `programs/${variant}/${String(path || '').split('/')[2]}/${filename}`;
+  if (
+    path !== expectedPath
+    || !/^programs\/(?:uomo|donna)\/[0-9a-f-]{36}\/[a-zA-Z0-9._-]+\.pdf$/i.test(path)
+  ) {
     throw new Error('Percorso upload non valido.');
   }
 }

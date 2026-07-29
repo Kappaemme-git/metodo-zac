@@ -58,7 +58,8 @@ create index if not exists waitlist_signups_ip_created_idx
   where ip_hash is not null;
 
 create table if not exists public.program_config (
-  id smallint primary key check (id = 1),
+  -- 1 = programma Uomo, 2 = programma Donna
+  id smallint primary key check (id in (1, 2)),
   active boolean not null default false,
   filename text,
   storage_bucket text,
@@ -73,7 +74,7 @@ create table if not exists public.program_config (
 );
 
 insert into public.program_config (id, active)
-values (1, false)
+values (1, false), (2, false)
 on conflict (id) do nothing;
 
 alter table public.waitlist_signups enable row level security;
