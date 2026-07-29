@@ -72,6 +72,30 @@ test('flusso completo: login, upload privato, questionario e download', async ()
     assert.equal(login.status, 200);
     const adminCookie = login.headers.get('set-cookie').split(';')[0];
 
+    const preparedLargeUpload = await programAdminApi.fetch(new Request('http://localhost/api/admin/program', {
+      method: 'POST',
+      headers: { cookie: adminCookie, 'content-type': 'application/json' },
+      body: JSON.stringify({
+        filename: 'programma-elaborato.pdf',
+        size: 45 * 1024 * 1024,
+        type: 'application/pdf',
+      }),
+    }));
+    assert.equal(preparedLargeUpload.status, 200);
+    assert.equal((await preparedLargeUpload.json()).upload.mode, 'proxy');
+
+    const rejectedOversizeUpload = await programAdminApi.fetch(new Request('http://localhost/api/admin/program', {
+      method: 'POST',
+      headers: { cookie: adminCookie, 'content-type': 'application/json' },
+      body: JSON.stringify({
+        filename: 'programma-troppo-grande.pdf',
+        size: 50 * 1024 * 1024 + 1,
+        type: 'application/pdf',
+      }),
+    }));
+    assert.equal(rejectedOversizeUpload.status, 400);
+    assert.equal((await rejectedOversizeUpload.json()).error, 'Il PDF può pesare al massimo 50 MB.');
+
     const uploaded = await programAdminApi.fetch(new Request('http://localhost/api/admin/program', {
       method: 'PUT',
       headers: { cookie: adminCookie, 'content-type': 'application/pdf', 'x-file-name': encodeURIComponent('programma-test.pdf') },

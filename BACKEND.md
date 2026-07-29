@@ -53,13 +53,18 @@ Tutti i segreti devono essere lunghi, casuali e diversi. Dopo il deploy:
 1. visita `/api/config` e verifica `ok: true`;
 2. apri il questionario dalla home;
 3. accedi a `/admin.html`;
-4. carica un PDF di prova sotto 4 MB;
+4. carica un PDF di prova fino a 50 MB;
 5. compila il questionario e verifica il download;
 6. cancella i dati sintetici prima del lancio.
 
-Il limite di upload da dashboard è 4 MB perché le Vercel Functions accettano
-payload fino a 4,5 MB. Per PDF più grandi va aggiunto un upload diretto con URL
-firmato Supabase.
+I PDF vengono inviati direttamente dal browser allo Storage privato di Supabase
+con un’autorizzazione temporanea creata dal backend. Il caricamento è suddiviso
+in blocchi da 6 MB, mostra l’avanzamento e riprende automaticamente dopo brevi
+interruzioni di rete. Il limite applicativo e del bucket è 50 MB.
+
+Nel progetto Supabase verificare anche `Storage → Settings → Global file size
+limit = 50 MB`: il limite globale deve essere almeno uguale a quello del bucket
+`lead-magnets`.
 
 ## Decisioni prima del go-live
 
@@ -75,6 +80,8 @@ firmato Supabase.
 ## Sicurezza inclusa
 
 - Nessuna secret key nel browser o nel repository.
+- Upload PDF diretto e ripristinabile; il browser riceve soltanto un token
+  temporaneo limitato al singolo percorso generato dal server.
 - Cookie admin `HttpOnly`, `SameSite=Strict` e `Secure` in produzione.
 - Confronto password timing-safe.
 - Punteggio calcolato solo dal server.

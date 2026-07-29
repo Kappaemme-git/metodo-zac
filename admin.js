@@ -100,21 +100,107 @@ $('#pdfInput').addEventListener('change',()=>selectFile($('#pdfInput').files[0])
 function selectFile(file){
   state.selectedFile=file||null;
   $('#uploadButton').disabled=!file;
-  $('#fileHint').textContent=file?`${file.name} · ${(file.size/1024/1024).toFixed(2)} MB`:'Trascina qui o scegli un file · massimo 4 MB';
+  $('#fileHint').textContent=file?`${file.name} · ${(file.size/1024/1024).toFixed(2)} MB`:'Trascina qui o scegli un file · massimo 50 MB';
 }
 
 $('#uploadForm').addEventListener('submit',async event=>{
   event.preventDefault();const file=state.selectedFile;if(!file)return;
   const message=$('#uploadMessage');message.textContent='';message.className='form-message';
   if(file.type!=='application/pdf'&&!file.name.toLowerCase().endsWith('.pdf')){message.textContent='Seleziona un PDF.';return;}
-  if(file.size>4*1024*1024){message.textContent='Il PDF supera 4 MB.';return;}
+  if(file.size>50*1024*1024){message.textContent='Il PDF supera 50 MB.';return;}
   $('#uploadButton').disabled=true;$('#uploadButton').textContent='Caricamento…';
   try{
-    const result=await api('/api/admin/program',{method:'PUT',headers:{'content-type':'application/pdf','x-file-name':encodeURIComponent(file.name)},body:file});
+    const prepared=await api('/api/admin/program',{
+      method:'POST',
+      headers:{'content-type':'application/json'},
+      body:JSON.stringify({filename:file.name,size:file.size,type:file.type||'application/pdf'}),
+    });
+    let result;
+    if(prepared.upload.mode==='resumable'){
+      await uploadPdfResumable(prepared.upload,file,percentage=>{
+        $('#uploadButton').textContent=`Caricamento ${percentage}%`;
+        message.textContent=`Invio del PDF: ${percentage}%`;
+      });
+      result=await api('/api/admin/program',{
+        method:'PATCH',
+        headers:{'content-type':'application/json'},
+        body:JSON.stringify({action:'finalize-upload',ticket:prepared.upload.ticket}),
+      });
+    }else{
+      result=await api('/api/admin/program',{method:'PUT',headers:{'content-type':'application/pdf','x-file-name':encodeURIComponent(file.name)},body:file});
+    }
     message.textContent='Programma caricato correttamente.';message.classList.add('success');state.stats.program=result.program;renderStats();selectFile(null);$('#pdfInput').value='';toast('Programma caricato correttamente.');
   }catch(error){message.textContent=error.message;}
   finally{$('#uploadButton').disabled=!state.selectedFile;$('#uploadButton').innerHTML='Carica il programma <span>→</span>';}
 });
+
+async function uploadPdfResumable(upload,file,onProgress){
+  const metadata=[
+    ['bucketName','lead-magnets'],
+    ['objectName',upload.path],
+    ['contentType','application/pdf'],
+    ['cacheControl','3600'],
+  ].map(([key,value])=>`${key} ${btoa(value)}`).join(',');
+  const created=await fetch(upload.endpoint,{
+    method:'POST',
+    credentials:'omit',
+    headers:{
+      'Tus-Resumable':'1.0.0',
+      'Upload-Length':String(file.size),
+      'Upload-Metadata':metadata,
+      'x-signature':upload.token,
+      'x-upsert':'false',
+    },
+  });
+  if(!created.ok)throw new Error(await storageError(created,'Impossibile avviare il caricamento.'));
+  const location=created.headers.get('location');
+  if(!location)throw new Error('Supabase non ha restituito il collegamento di caricamento.');
+  const uploadUrl=new URL(location,upload.endpoint).toString();
+  const chunkSize=6*1024*1024;
+  let offset=Number(created.headers.get('upload-offset')||0);
+  let failures=0;
+  while(offset<file.size){
+    const end=Math.min(offset+chunkSize,file.size);
+    try{
+      const response=await fetch(uploadUrl,{
+        method:'PATCH',
+        credentials:'omit',
+        headers:{
+          'Tus-Resumable':'1.0.0',
+          'Upload-Offset':String(offset),
+          'Content-Type':'application/offset+octet-stream',
+          'x-signature':upload.token,
+        },
+        body:file.slice(offset,end),
+      });
+      if(!response.ok)throw new Error(await storageError(response,'Un blocco del PDF non è stato caricato.'));
+      offset=Number(response.headers.get('upload-offset')||end);
+      failures=0;
+      onProgress(Math.min(100,Math.round(offset/file.size*100)));
+    }catch(error){
+      failures+=1;
+      if(failures>4)throw new Error('Caricamento interrotto. Controlla la connessione e riprova.');
+      await wait([0,1000,3000,6000,10000][failures]);
+      offset=await resumableOffset(uploadUrl,upload.token,offset);
+      onProgress(Math.min(100,Math.round(offset/file.size*100)));
+    }
+  }
+}
+
+async function resumableOffset(url,token,fallback){
+  try{
+    const response=await fetch(url,{method:'HEAD',credentials:'omit',headers:{'Tus-Resumable':'1.0.0','x-signature':token}});
+    if(response.ok)return Number(response.headers.get('upload-offset')||fallback);
+  }catch{}
+  return fallback;
+}
+
+async function storageError(response,fallback){
+  const body=await response.json().catch(()=>null);
+  return body?.message||body?.error||fallback;
+}
+
+function wait(milliseconds){return new Promise(resolve=>setTimeout(resolve,milliseconds));}
 
 $('#removeProgramButton').addEventListener('click',async()=>{
   const filename=state.stats?.program?.filename;

@@ -253,6 +253,7 @@ export class FileRepository {
 
 export class SupabaseRepository {
   constructor(url, key) {
+    this.url = url;
     this.supabase = createClient(url, key, {
       auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
     });
@@ -392,6 +393,58 @@ export class SupabaseRepository {
     return fromDbProgram(saved.data);
   }
 
+  async createProgramUpload(filename) {
+    const safeName = sanitizeProgramFilename(filename);
+    const path = `programs/${crypto.randomUUID()}/${safeName}`;
+    const { data, error } = await this.supabase.storage.from('lead-magnets')
+      .createSignedUploadUrl(path, { upsert: false });
+    if (error) throw error;
+    const projectRef = new URL(this.url).hostname.split('.')[0];
+    return {
+      mode: 'resumable',
+      endpoint: `https://${projectRef}.storage.supabase.co/storage/v1/upload/resumable`,
+      token: data.token,
+      path,
+      filename: safeName,
+    };
+  }
+
+  async finalizeProgramUpload({ path, filename, size }) {
+    const expectedPath = `programs/${path.split('/')[1]}/${filename}`;
+    if (path !== expectedPath || !/^programs\/[0-9a-f-]{36}\/[a-zA-Z0-9._-]+\.pdf$/i.test(path)) {
+      throw new Error('Percorso upload non valido.');
+    }
+    const folder = path.slice(0, path.lastIndexOf('/'));
+    const listed = await this.supabase.storage.from('lead-magnets')
+      .list(folder, { limit: 10, search: filename });
+    if (listed.error) throw listed.error;
+    const uploaded = listed.data?.find((item) => item.name === filename);
+    if (!uploaded) throw new Error('Il PDF caricato non è stato trovato.');
+    const storedSize = Number(uploaded.metadata?.size || 0);
+    if (storedSize && storedSize !== Number(size)) {
+      await this.supabase.storage.from('lead-magnets').remove([path]);
+      throw new Error('La dimensione del PDF caricato non corrisponde.');
+    }
+
+    const current = await this.getProgram();
+    const row = {
+      id: 1,
+      active: true,
+      filename,
+      storage_bucket: 'lead-magnets',
+      storage_path: path,
+      uploaded_at: isoNow(),
+      updated_at: isoNow(),
+    };
+    const saved = await this.supabase.from('program_config').upsert(row).select().single();
+    if (saved.error) throw saved.error;
+    if (current.path && current.path !== path) {
+      const removed = await this.supabase.storage.from(current.bucket || 'lead-magnets').remove([current.path]);
+      if (removed.error) console.error('[zac-program-cleanup]', removed.error.message);
+    }
+    return fromDbProgram(saved.data);
+  }
+
   async deleteProgram() {
     const current = await this.getProgram();
     const { data, error } = await this.supabase.from('program_config')
@@ -487,6 +540,11 @@ function fromDbProgram(row) {
     uploadedAt: row.uploaded_at,
     updatedAt: row.updated_at,
   };
+}
+
+function sanitizeProgramFilename(filename) {
+  const safeName = String(filename || '').replace(/[^a-zA-Z0-9._-]+/g, '-').replace(/^-+|-+$/g, '');
+  return safeName && safeName.toLowerCase().endsWith('.pdf') ? safeName : 'programma-metodo-zac.pdf';
 }
 
 let repository;

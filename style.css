@@ -231,51 +231,6 @@
       padding-top:0;
       transform:translateY(-10px);
     }
-    .hero-crest{
-      position:relative;
-      width:132px !important;
-      max-width:132px !important;
-      aspect-ratio:1;
-      display:grid;
-      place-items:center;
-      border-radius:50%;
-      background:
-        radial-gradient(circle at 50% 40%,rgba(230,200,120,.10),transparent 60%),
-        #0E1C40;
-      box-shadow:0 22px 60px rgba(0,0,0,.30),inset 0 0 0 1px rgba(255,255,255,.05);
-      margin-bottom:24px;
-      isolation:isolate;
-    }
-    .hero-crest::before,
-    .hero-crest::after{
-      content:"";
-      position:absolute;
-      inset:-9px;
-      border-radius:50%;
-      pointer-events:none;
-    }
-    .hero-crest::before{
-      z-index:-1;
-      border:1px solid rgba(230,200,120,.28);
-      box-shadow:0 0 34px rgba(200,162,74,.10);
-    }
-    .hero-crest::after{
-      z-index:2;
-      background:conic-gradient(from 0deg, transparent 0deg, transparent 268deg, rgba(230,200,120,.25) 286deg, #F3D98C 305deg, transparent 326deg, transparent 360deg);
-      -webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 3px),#000 calc(100% - 2px));
-      mask:radial-gradient(farthest-side,transparent calc(100% - 3px),#000 calc(100% - 2px));
-    }
-    @keyframes crestOrbit{to{transform:rotate(360deg);}}
-    @media(prefers-reduced-motion:reduce){.hero-crest::after{animation:none;}}
-    .hero-crest img{
-      display:block;
-      width:98% !important;
-      max-width:98% !important;
-      height:98% !important;
-      max-height:98% !important;
-      object-fit:contain;
-      border-radius:50%;
-    }
     .hero-title-wrap{
       position:relative;
       width:100%;
@@ -777,7 +732,6 @@
   .pcard p{font-size:12.5px;line-height:1.45;margin-bottom:0;max-width:290px;}
   .feat-cta{padding:24px 22px;}
   footer .wrap{flex-direction:column;align-items:flex-start;gap:22px;}
-  .hero-crest{width:116px !important;max-width:116px !important;}
 }
 
 /* ---------- MOBILE: sezioni pi\u00f9 compatte e leggibili ---------- */
