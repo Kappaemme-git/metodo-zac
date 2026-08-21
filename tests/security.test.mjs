@@ -2,8 +2,24 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
   createProgramUploadTicket,
+  hasCronAuthorization,
   verifyProgramUploadTicket,
 } from '../server/security.mjs';
+
+test('il keepalive accetta soltanto il segreto configurato per Vercel Cron', () => {
+  process.env.CRON_SECRET = 'test-cron-secret-with-more-than-32-characters';
+  try {
+    assert.equal(hasCronAuthorization(new Request('http://localhost/api/keepalive')), false);
+    assert.equal(hasCronAuthorization(new Request('http://localhost/api/keepalive', {
+      headers: { authorization: 'Bearer wrong-secret' },
+    })), false);
+    assert.equal(hasCronAuthorization(new Request('http://localhost/api/keepalive', {
+      headers: { authorization: `Bearer ${process.env.CRON_SECRET}` },
+    })), true);
+  } finally {
+    delete process.env.CRON_SECRET;
+  }
+});
 
 test('il ticket di upload PDF è firmato e non può essere modificato dal browser', () => {
   process.env.ADMIN_SESSION_SECRET = 'test-session-secret-with-more-than-32-characters';
