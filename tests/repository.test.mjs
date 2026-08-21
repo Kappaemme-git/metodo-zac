@@ -23,6 +23,7 @@ test('archivio locale salva lead, idempotenza e stato programma', async () => {
     assert.equal(stats.contacts, 1);
     assert.equal(stats.submissions, 1);
     assert.equal(stats.byLevel.Intermedio, 1);
+    assert.equal(await repository.keepAlive(), true);
 
     const pdf = Buffer.from('%PDF-1.4\n% uomo\n');
     const donnaPdf = Buffer.from('%PDF-1.4\n% donna\n');

@@ -7,8 +7,31 @@ import sessionApi from '../api/admin/session.js';
 import programAdminApi from '../api/admin/program.js';
 import questionnaireApi from '../api/questionnaire.js';
 import programApi from '../api/program.js';
+import keepaliveApi from '../api/keepalive.js';
 import { resetRepositoryForTests } from '../server/repository.mjs';
 import { PRIVACY_VERSION, QUESTIONNAIRE_VERSION } from '../server/questionnaire.mjs';
+
+test('il keepalive giornaliero è privato e controlla il database', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'zac-keepalive-'));
+  process.env.ZAC_STORE_PATH = join(dir, 'store.json');
+  process.env.CRON_SECRET = 'test-cron-secret-with-more-than-32-characters';
+  resetRepositoryForTests();
+  try {
+    const unauthorized = await keepaliveApi.fetch(new Request('http://localhost/api/keepalive'));
+    assert.equal(unauthorized.status, 401);
+
+    const response = await keepaliveApi.fetch(new Request('http://localhost/api/keepalive', {
+      headers: { authorization: `Bearer ${process.env.CRON_SECRET}` },
+    }));
+    assert.equal(response.status, 200);
+    assert.deepEqual(await response.json(), { ok: true });
+  } finally {
+    resetRepositoryForTests();
+    delete process.env.ZAC_STORE_PATH;
+    delete process.env.CRON_SECRET;
+    await rm(dir, { recursive: true, force: true });
+  }
+});
 
 test('il questionario resta chiuso finché il PDF non è pubblicato', async () => {
   const dir = await mkdtemp(join(tmpdir(), 'zac-api-closed-'));

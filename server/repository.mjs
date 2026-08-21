@@ -214,6 +214,11 @@ export class FileRepository {
     return computeStats(data.waitlist, data.submissions, data.programs);
   }
 
+  async keepAlive() {
+    await this.read();
+    return true;
+  }
+
   async getPrograms() {
     const data = await this.read();
     return data.programs;
@@ -388,6 +393,16 @@ export class SupabaseRepository {
   async stats() {
     const data = await this.rawData();
     return computeStats(data.waitlist, data.submissions, data.programs);
+  }
+
+  async keepAlive() {
+    const probes = await Promise.all([
+      this.supabase.from('waitlist_signups').select('id', { head: true, count: 'exact' }),
+      this.supabase.from('questionnaire_submissions').select('id', { head: true, count: 'exact' }),
+      this.supabase.from('program_config').select('id', { head: true, count: 'exact' }),
+    ]);
+    for (const probe of probes) if (probe.error) throw probe.error;
+    return true;
   }
 
   async getPrograms() {

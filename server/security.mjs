@@ -118,6 +118,11 @@ export function verifyAdminPassword(password) {
   return safeEqual(password || '', secret('ADMIN_PASSWORD', 8));
 }
 
+export function hasCronAuthorization(request) {
+  const authorization = request.headers.get('authorization') || '';
+  return safeEqual(authorization, `Bearer ${secret('CRON_SECRET')}`);
+}
+
 export function downloadTokenFor(idempotencyKey) {
   return createHmac('sha256', secret('DOWNLOAD_TOKEN_SECRET'))
     .update(`zac-download:${idempotencyKey}`)
