@@ -839,12 +839,14 @@
 .contact{padding:110px 0;background:var(--ink);border-top:1px solid var(--line-soft);position:relative;overflow:hidden;}
 .contact::before{content:"";position:absolute;inset:0;background:radial-gradient(60% 100% at 50% 0%,rgba(200,162,74,.10),transparent 60%);}
 .contact .wrap{position:relative;}
-.contact-card{max-width:680px;margin:0 auto;text-align:center;}
+.contact-card{max-width:780px;margin:0 auto;text-align:center;}
 .contact-card h2{font-size:clamp(34px,5vw,58px);margin:14px 0 16px;}
-.contact-card>p{color:var(--text);font-size:17px;line-height:1.7;max-width:480px;margin:0 auto 30px;}
-.contact-ig{gap:11px;}
-.contact-ig svg{flex:none;}
-.contact-handle{color:var(--gold-bright);font-family:'Oswald',sans-serif;letter-spacing:.16em;font-size:13px;text-transform:uppercase;margin-top:20px;}
+.contact-card>p{color:var(--text);font-size:17px;line-height:1.7;max-width:570px;margin:0 auto 30px;}
+.contact-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;max-width:650px;margin:0 auto;}
+.contact-option{display:flex;flex-direction:column;align-items:stretch;gap:12px;}
+.contact-channel{width:100%;min-height:54px;justify-content:center;gap:11px;}
+.contact-channel svg{flex:none;}
+.contact-detail{color:var(--gold-bright);font-family:'Oswald',sans-serif;letter-spacing:.16em;font-size:12px;text-transform:uppercase;}
 
 /* ---------- RIFINITURE MOBILE ---------- */
 @media(max-width:560px){
@@ -876,6 +878,8 @@
   .pcard .belt .belt-svg{width:90px;}
   .pcard p{font-size:12.5px;line-height:1.45;margin-bottom:0;max-width:290px;}
   .feat-cta{padding:24px 22px;}
+  .contact-actions{grid-template-columns:1fr;gap:22px;}
+  .contact-channel{min-height:52px;}
   footer .wrap{flex-direction:column;align-items:flex-start;gap:22px;}
 }
 
