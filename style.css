@@ -65,7 +65,7 @@
     .brand .bt{display:flex;flex-direction:column;line-height:1;}
     .brand .bt .b1{font-family:'Oswald',sans-serif;font-weight:600;font-size:21px;letter-spacing:.12em;color:var(--ivory);}
     .brand .bt .b1 b{color:var(--gold-bright);font-weight:700;}
-    .brand .bt .b2{font-family:'Oswald',sans-serif;font-weight:500;font-size:9.5px;letter-spacing:.30em;white-space:nowrap;color:var(--muted);margin-top:5px;}
+    .brand .bt .b2{font-family:'Oswald',sans-serif;font-weight:500;font-size:7.5px;letter-spacing:.24em;white-space:nowrap;color:var(--muted);margin-top:5px;}
 
     /* ---------- NAV ---------- */
     .scroll-progress{position:fixed;top:0;left:0;height:2px;width:0;z-index:200;pointer-events:none;
@@ -95,6 +95,7 @@
       .nav-links a:not(.btn)::after{display:none;}
       .nav-links .btn{margin:16px 32px 20px;justify-content:center;padding:15px 22px;font-size:14px;}
     }
+    @media(max-width:720px){.brand .bt .b2{display:none;}}
 
     /* ---------- HERO ---------- */
     .hero{position:relative;min-height:100vh;display:flex;align-items:center;padding:130px 0 70px;overflow:hidden;
