@@ -727,7 +727,6 @@
     .payment-brands{display:flex;align-items:center;gap:18px;white-space:nowrap;}
     .payment-brands span{display:inline-flex;align-items:center;justify-content:center;height:42px;font-weight:700;}
     .payment-brands .klarna{padding:0 18px;border-radius:5px;background:#ffb3c7;color:#171219;font-size:19px;letter-spacing:-.04em;}
-    .payment-brands .scalapay{color:var(--ivory);font-size:19px;letter-spacing:-.04em;}
     .comparison-block{margin-top:78px;}
     .comparison-scroll{width:100%;overflow-x:auto;border:1px solid rgba(188,200,216,.22);border-radius:5px;background:rgba(7,18,34,.7);scrollbar-color:var(--gold-deep) rgba(255,255,255,.05);scrollbar-width:thin;}
     .comparison-scroll:focus-visible{outline:2px solid var(--gold-bright);outline-offset:4px;}
@@ -789,7 +788,7 @@
       .installment-icon{margin:0 auto;}
       .installment-note p{font-size:12px;}
       .payment-brands{grid-column:auto;flex-wrap:wrap;gap:12px;padding-top:10px;}
-      .payment-brands .klarna,.payment-brands .scalapay{font-size:17px;}
+      .payment-brands .klarna{font-size:17px;}
       .comparison-block{margin-top:60px;}
       .comparison-scroll{margin-left:0;}
       .comparison-table{min-width:760px;}
