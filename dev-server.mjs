@@ -9,6 +9,7 @@ process.env.ZAC_STORE_PATH ||= resolve('.data/dev-store.json');
 
 const API_ROUTES = new Map([
   ['/api/config', './api/config.js'],
+  ['/api/keepalive', './api/keepalive.js'],
   ['/api/waitlist', './api/waitlist.js'],
   ['/api/questionnaire', './api/questionnaire.js'],
   ['/api/program', './api/program.js'],

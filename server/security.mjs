@@ -118,6 +118,13 @@ export function verifyAdminPassword(password) {
   return safeEqual(password || '', secret('ADMIN_PASSWORD', 8));
 }
 
+export function hasCronAuthorization(request) {
+  const cronSecret = process.env.CRON_SECRET;
+  if (!cronSecret || cronSecret.length < 32) return false;
+  const authorization = request.headers.get('authorization') || '';
+  return safeEqual(authorization, `Bearer ${cronSecret}`);
+}
+
 export function downloadTokenFor(idempotencyKey) {
   return createHmac('sha256', secret('DOWNLOAD_TOKEN_SECRET'))
     .update(`zac-download:${idempotencyKey}`)
