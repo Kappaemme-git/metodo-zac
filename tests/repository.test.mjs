@@ -5,15 +5,19 @@ import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { FileRepository, SupabaseRepository } from '../server/repository.mjs';
 
-test('keepalive Supabase legge tre tabelle senza creare dati', async () => {
+test('keepalive Supabase esegue una lettura minima senza creare dati', async () => {
   const repository = new SupabaseRepository('https://example.supabase.co', 'test-key');
   const calls = [];
   repository.supabase = {
     from(table) {
       return {
-        select(columns, options) {
-          calls.push({ table, columns, options });
-          return Promise.resolve({ error: null });
+        select(columns) {
+          return {
+            limit(count) {
+              calls.push({ table, columns, count });
+              return Promise.resolve({ error: null });
+            },
+          };
         },
       };
     },
@@ -21,13 +25,11 @@ test('keepalive Supabase legge tre tabelle senza creare dati', async () => {
 
   assert.equal(await repository.keepAlive(), true);
   assert.deepEqual(calls, [
-    { table: 'waitlist_signups', columns: 'id', options: { head: true, count: 'exact' } },
-    { table: 'questionnaire_submissions', columns: 'id', options: { head: true, count: 'exact' } },
-    { table: 'program_config', columns: 'id', options: { head: true, count: 'exact' } },
+    { table: 'program_config', columns: 'id', count: 1 },
   ]);
 
-  repository.supabase.from = (table) => ({
-    select: () => Promise.resolve({ error: table === 'program_config' ? new Error('database offline') : null }),
+  repository.supabase.from = () => ({
+    select: () => ({ limit: () => Promise.resolve({ error: { message: '', code: 'database offline' } }) }),
   });
   await assert.rejects(repository.keepAlive(), /database offline/);
 });
