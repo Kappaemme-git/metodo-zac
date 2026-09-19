@@ -119,8 +119,10 @@ export function verifyAdminPassword(password) {
 }
 
 export function hasCronAuthorization(request) {
+  const cronSecret = process.env.CRON_SECRET;
+  if (!cronSecret || cronSecret.length < 32) return false;
   const authorization = request.headers.get('authorization') || '';
-  return safeEqual(authorization, `Bearer ${secret('CRON_SECRET')}`);
+  return safeEqual(authorization, `Bearer ${cronSecret}`);
 }
 
 export function downloadTokenFor(idempotencyKey) {
