@@ -60,7 +60,7 @@ repo in Vercel e configura le variabili presenti in `.env.example`:
 Vercel richiama automaticamente `GET /api/keepalive` ogni giorno alle 06:17 UTC,
 anche quando nessuno compila il questionario. L'endpoint è protetto da
 `CRON_SECRET`: imposta in Vercel Production un valore casuale di almeno 32
-caratteri, senza salvarlo nel repository. Il controllo esegue solo tre letture
+caratteri, senza salvarlo nel repository. Il controllo esegue una lettura minima
 su Supabase; non crea iscrizioni, non invia email e non modifica i dati.
 
 Dopo il deploy, verifica nei log di Vercel che il cron risponda `200` e che

@@ -396,12 +396,8 @@ export class SupabaseRepository {
   }
 
   async keepAlive() {
-    const probes = await Promise.all([
-      this.supabase.from('waitlist_signups').select('id', { head: true, count: 'exact' }),
-      this.supabase.from('questionnaire_submissions').select('id', { head: true, count: 'exact' }),
-      this.supabase.from('program_config').select('id', { head: true, count: 'exact' }),
-    ]);
-    for (const probe of probes) if (probe.error) throw probe.error;
+    const { error } = await this.supabase.from('program_config').select('id').limit(1);
+    if (error) throw new Error(`Keepalive Supabase: ${error.message || error.code || 'lettura non riuscita'}`);
     return true;
   }
 
