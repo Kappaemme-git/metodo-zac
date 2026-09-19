@@ -3,7 +3,34 @@ import assert from 'node:assert/strict';
 import { mkdtemp, readFile, rm } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
-import { FileRepository } from '../server/repository.mjs';
+import { FileRepository, SupabaseRepository } from '../server/repository.mjs';
+
+test('keepalive Supabase legge tre tabelle senza creare dati', async () => {
+  const repository = new SupabaseRepository('https://example.supabase.co', 'test-key');
+  const calls = [];
+  repository.supabase = {
+    from(table) {
+      return {
+        select(columns, options) {
+          calls.push({ table, columns, options });
+          return Promise.resolve({ error: null });
+        },
+      };
+    },
+  };
+
+  assert.equal(await repository.keepAlive(), true);
+  assert.deepEqual(calls, [
+    { table: 'waitlist_signups', columns: 'id', options: { head: true, count: 'exact' } },
+    { table: 'questionnaire_submissions', columns: 'id', options: { head: true, count: 'exact' } },
+    { table: 'program_config', columns: 'id', options: { head: true, count: 'exact' } },
+  ]);
+
+  repository.supabase.from = (table) => ({
+    select: () => Promise.resolve({ error: table === 'program_config' ? new Error('database offline') : null }),
+  });
+  await assert.rejects(repository.keepAlive(), /database offline/);
+});
 
 test('archivio locale salva lead, idempotenza e stato programma', async () => {
   const dir = await mkdtemp(join(tmpdir(), 'zac-repo-'));

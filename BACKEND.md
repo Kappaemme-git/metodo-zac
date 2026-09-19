@@ -50,9 +50,24 @@ repo in Vercel e configura le variabili presenti in `.env.example`:
 - `ADMIN_PASSWORD`
 - `ADMIN_SESSION_SECRET`
 - `DOWNLOAD_TOKEN_SECRET`
+- `CRON_SECRET`
 - `IP_HASH_SECRET`
 - `SITE_ORIGIN`
 - `BREVO_API_KEY`
+
+### Attività periodica del database (Supabase Free)
+
+Vercel richiama automaticamente `GET /api/keepalive` ogni giorno alle 06:17 UTC,
+anche quando nessuno compila il questionario. L'endpoint è protetto da
+`CRON_SECRET`: imposta in Vercel Production un valore casuale di almeno 32
+caratteri, senza salvarlo nel repository. Il controllo esegue solo tre letture
+su Supabase; non crea iscrizioni, non invia email e non modifica i dati.
+
+Dopo il deploy, verifica nei log di Vercel che il cron risponda `200` e che
+`/api/config` risponda correttamente. Su Supabase Free l'attività periodica
+riduce il rischio di sospensione, ma non è una garanzia: controlla le email di
+avviso di Supabase. Se il progetto è già in pausa, bisogna prima riattivarlo
+manualmente dalla dashboard Supabase. Un ping HTTP non può riavviarlo.
 
 Le liste Brevo attualmente collegate sono:
 
