@@ -73,7 +73,7 @@
     nav{position:fixed;top:0;left:0;right:0;z-index:100;transition:background .4s var(--ease),border-color .4s;border-bottom:1px solid transparent;}
     nav.solid{background:rgba(10,19,38,.86);backdrop-filter:blur(14px);border-bottom-color:var(--line-soft);}
     nav .wrap{display:flex;align-items:center;justify-content:space-between;height:84px;}
-    .nav-links{display:flex;align-items:center;gap:32px;}
+    .nav-links{display:flex;align-items:center;gap:24px;}
     .nav-links a:not(.btn){position:relative;flex-shrink:0;white-space:nowrap;text-decoration:none;color:var(--text);font-family:'Oswald',sans-serif;font-weight:500;font-size:13.5px;letter-spacing:.12em;text-transform:uppercase;transition:color .3s;}
     .nav-links a:not(.btn)::after{content:"";position:absolute;left:0;bottom:-7px;width:0;height:2px;background:var(--gold);transition:width .3s var(--ease);}
     .nav-links a:not(.btn):hover{color:var(--ivory);}
@@ -610,6 +610,51 @@
     .creds .k{font-family:'Oswald',sans-serif;font-weight:600;letter-spacing:.06em;color:var(--gold-bright);font-size:16px;min-width:120px;text-transform:uppercase;}
     .creds .v{color:var(--text);font-size:14.5px;}
     @media(max-width:860px){.about-grid{grid-template-columns:1fr;gap:40px;}.portrait{max-width:320px;}}
+
+    /* ---------- APP METODO ZAC ---------- */
+    #app{scroll-margin-top:84px;}
+    .app-showcase{padding:84px 0 94px;overflow:hidden;border-top:1px solid var(--line-soft);background:
+      radial-gradient(ellipse at 77% 48%,rgba(200,162,74,.11),transparent 38%),
+      linear-gradient(145deg,#0B1B32 0%,#071221 100%);}
+    .app-showcase-grid{position:relative;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:center;gap:64px;}
+    .app-showcase-copy{max-width:570px;}
+    .app-identity{display:flex;align-items:center;gap:16px;margin:28px 0 22px;}
+    .app-identity img{width:80px;height:80px;object-fit:cover;border:1px solid rgba(230,200,120,.4);border-radius:18px;box-shadow:0 16px 36px rgba(0,0,0,.35);}
+    .app-identity span{display:flex;flex-direction:column;gap:3px;color:var(--ivory);font-family:'Oswald',sans-serif;font-size:21px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;}
+    .app-identity small{color:var(--gold-bright);font-size:11px;font-weight:500;letter-spacing:.18em;}
+    .app-showcase h2{font-size:clamp(36px,4.8vw,62px);line-height:1.08;margin-bottom:22px;}
+    .app-showcase-lead{max-width:540px;color:var(--text);font-size:16.5px;line-height:1.75;}
+    .app-feature-list{list-style:none;margin:30px 0 0;max-width:480px;}
+    .app-feature-list li{display:flex;gap:14px;align-items:baseline;padding:11px 0;border-top:1px solid var(--line-soft);color:var(--ivory);font-size:14px;line-height:1.55;}
+    .app-feature-list li:last-child{border-bottom:1px solid var(--line-soft);}
+    .app-feature-list li::before{content:"✓";flex:none;color:var(--gold-bright);font-weight:700;}
+    .app-store-link{justify-content:center;margin-top:28px;}
+    .app-access-note{max-width:480px;margin-top:16px;color:var(--muted);font-size:12.5px;line-height:1.55;}
+    .app-showcase-screens{position:relative;display:flex;justify-content:center;align-items:center;gap:4px;min-height:540px;}
+    .app-showcase-screens::before{content:"";position:absolute;inset:9% 0 5%;border:1px solid rgba(200,162,74,.14);border-radius:50%;transform:rotate(-18deg);pointer-events:none;}
+    .app-screen{position:relative;display:block;width:min(47%,258px);height:auto;filter:drop-shadow(0 22px 28px rgba(0,0,0,.4));}
+    .app-screen--back{transform:translate(18px,34px) rotate(-5deg);}
+    .app-screen--front{transform:translate(-18px,-18px) rotate(5deg);}
+    @media(max-width:900px){
+      .app-showcase-grid{grid-template-columns:1fr;gap:36px;}
+      .app-showcase-copy{max-width:660px;}
+      .app-showcase-screens{min-height:0;}
+      .app-screen{width:min(42%,250px);}
+    }
+    @media(max-width:560px){
+      #app{scroll-margin-top:74px;}
+      .app-showcase{padding:68px 0 78px;}
+      .app-identity{margin:22px 0 20px;}
+      .app-identity img{width:68px;height:68px;border-radius:15px;}
+      .app-identity span{font-size:18px;}
+      .app-showcase h2{font-size:36px;}
+      .app-showcase-lead{font-size:15.5px;}
+      .app-showcase-screens{gap:0;}
+      .app-screen{width:50%;}
+      .app-screen--back{transform:translate(12px,20px) rotate(-5deg);}
+      .app-screen--front{transform:translate(-12px,-8px) rotate(5deg);}
+      .app-store-link{width:100%;}
+    }
 
     /* ---------- RISULTATI (zig-zag come Il Metodo) ---------- */
     .res-list{max-width:1120px;margin:10px auto 0;}
