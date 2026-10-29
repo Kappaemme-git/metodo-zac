@@ -30,6 +30,7 @@ const MIME = {
   '.jpeg': 'image/jpeg',
   '.webp': 'image/webp',
   '.pdf': 'application/pdf',
+  '.mp4': 'video/mp4',
 };
 
 const server = createServer(async (incoming, outgoing) => {
