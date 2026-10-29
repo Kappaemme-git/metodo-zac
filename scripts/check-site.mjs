@@ -18,7 +18,7 @@ for (const page of pages) {
   }
 }
 
-const scripts = ['admin.js', 'dev-server.mjs', 'api/config.js', 'api/waitlist.js', 'api/questionnaire.js', 'api/program.js', 'api/admin/session.js', 'api/admin/overview.js', 'api/admin/program.js'];
+const scripts = ['admin.js', 'app-trailer.js', 'dev-server.mjs', 'api/config.js', 'api/waitlist.js', 'api/questionnaire.js', 'api/program.js', 'api/admin/session.js', 'api/admin/overview.js', 'api/admin/program.js'];
 for (const file of scripts) {
   try { execFileSync(process.execPath, ['--check', file], { stdio: 'pipe' }); }
   catch (error) { errors.push(`${file}: ${error.stderr?.toString() || error.message}`); }
